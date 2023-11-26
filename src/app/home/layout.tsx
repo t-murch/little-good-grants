@@ -1,4 +1,4 @@
-import { inter } from "../ui/fonts";
+import { inter } from "@/app/ui/fonts";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
