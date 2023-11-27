@@ -1,8 +1,9 @@
 "use client";
 
+import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
-import { Button } from "../../components/ui/button";
 import { Grant } from "../types/grants";
 
 export const columns: ColumnDef<Grant>[] = [
@@ -52,7 +53,24 @@ export const columns: ColumnDef<Grant>[] = [
   {
     accessorKey: "description",
     header: "Description",
-    cell: ({ row }) => <div className="max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap">{row.getValue("description")}</div>,
+    cell: ({ row }) => {
+      const myDescription = row.getValue("description");
+      if (typeof myDescription === "string" && myDescription.length > 46) {
+        return (
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div className="max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap">{myDescription}</div>
+              </TooltipTrigger>
+              <TooltipContent>
+                <p className="max-w-md">{myDescription}</p>
+              </TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
+        );
+      }
+      return <div className="max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap">{row.getValue("description")}</div>;
+    },
   },
   {
     accessorKey: "popServed",
