@@ -56,11 +56,6 @@ export function DataTable<TData, TValue>({ columns: columnsProps, data: dataProp
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
-              // .map((column) => {
-              //   if (!mobileDefaultColumnIDs.includes(column.id)) column.toggleVisibility(false);
-              //   else column.toggleVisibility(true);
-              //   return column;
-              // })
               .map((column) => {
                 // This is a mobile-only feature of the table and we want to
                 // Mount the shortened Table with a limited set of options.

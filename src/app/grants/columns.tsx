@@ -52,6 +52,7 @@ export const columns: ColumnDef<Grant>[] = [
   {
     accessorKey: "description",
     header: "Description",
+    cell: ({ row }) => <div className="max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap">{row.getValue("description")}</div>,
   },
   {
     accessorKey: "popServed",
@@ -63,7 +64,6 @@ export const columns: ColumnDef<Grant>[] = [
   },
 ];
 
-// type AccessorKey = typeof columns['accessorKey'];
 export const mobileDefaultColumnIDs = ["name", "deadline", "url", "amount"];
 export const mobileDefaultColumns = mobileDefaultColumnIDs.reduce((acc: Record<string, boolean>, item) => {
   acc[item] = false;
