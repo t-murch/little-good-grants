@@ -63,6 +63,13 @@ export const columns: ColumnDef<Grant>[] = [
   },
 ];
 
+// type AccessorKey = typeof columns['accessorKey'];
+export const mobileDefaultColumnIDs = ["name", "deadline", "url", "amount"];
+export const mobileDefaultColumns = mobileDefaultColumnIDs.reduce((acc: Record<string, boolean>, item) => {
+  acc[item] = false;
+  return acc;
+}, {});
+
 const adminColumns: ColumnDef<Grant>[] = [
   {
     accessorKey: "submitted",
