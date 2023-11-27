@@ -1,5 +1,6 @@
 "use client";
 
+import useWindowSize from "@/app/utils/useWindowSize";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -7,20 +8,32 @@ import { ColumnDef, SortingState, VisibilityState, flexRender, getCoreRowModel, 
 import * as React from "react";
 
 interface DataTableProps<TData, TValue> {
+  // columns: ColumnDef<TData, TValue>[];
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
-export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData, TValue>) {
+export function DataTable<TData, TValue>({ columns: columnsProps, data: dataProp }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
+  const { width } = useWindowSize();
+  const isMobile = width && width < 768;
+
+  const data = React.useMemo(() => {
+    return Array.isArray(dataProp) ? dataProp : [];
+  }, [dataProp]);
+
+  const columns = React.useMemo(() => columnsProps, [columnsProps]);
 
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
-    initialState: { pagination: { pageIndex: 0, pageSize: 25 } },
+    initialState: {
+      // columnVisibility: mobileDefaultColumns,
+      pagination: { pageIndex: 0, pageSize: 25 },
+    },
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
@@ -43,7 +56,16 @@ export function DataTable<TData, TValue>({ columns, data }: DataTableProps<TData
             {table
               .getAllColumns()
               .filter((column) => column.getCanHide())
+              // .map((column) => {
+              //   if (!mobileDefaultColumnIDs.includes(column.id)) column.toggleVisibility(false);
+              //   else column.toggleVisibility(true);
+              //   return column;
+              // })
               .map((column) => {
+                // This is a mobile-only feature of the table and we want to
+                // Mount the shortened Table with a limited set of options.
+                // if (!mobileDefaultColumnIDs.includes(column.id)) column.toggleVisibility(false);
+                // else column.toggleVisibility(true);
                 return (
                   <DropdownMenuCheckboxItem key={column.id} className="capitalize" checked={column.getIsVisible()} onCheckedChange={(value) => column.toggleVisibility(!!value)}>
                     {column.id}
