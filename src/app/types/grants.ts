@@ -1,16 +1,16 @@
 export type Grant = {
-  Name: string;
-  OrganizationName: string;
-  DeadlineDueDate: DeadlineType;
-  URL: string;
-  Amount: number;
-  Description: string;
-  PopulationServed: string;
-  IndustriesServed: string;
-  DateAdded: string;
-  LastUpdated: string;
+  name: string;
+  orgName: string;
+  deadline: DeadlineType;
+  url: string;
+  amount: number;
+  description: string;
+  popServed: string;
+  indServed: string;
+  dateAdded: string;
+  lastUpdated: string;
   submitted: boolean;
-  SubmissionDate: string;
+  submissionDate: string;
   approved: boolean;
 };
 
