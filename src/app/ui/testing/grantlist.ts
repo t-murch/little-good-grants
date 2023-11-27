@@ -22,7 +22,8 @@ export const testData: Grant[] = [
     deadline: "2023-11-15",
     url: "https://example.com/grant2",
     amount: 8000,
-    description: "Description for Grant 2",
+    description:
+      "Super Long Description for Grant 2. Nam pretium in risus eu auctor. Integer sed ex ut tellus faucibus bibendum. Donec ultricies augue in nisl tristique vestibulum. Maecenas a est ut mauris volutpat semper in nec ex. Mauris interdum mi nec tortor accumsan euismod.",
     popServed: "Community B",
     indServed: "Industry Y",
     dateAdded: "2023-10-15T12:30:00Z",
