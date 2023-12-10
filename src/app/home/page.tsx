@@ -8,9 +8,9 @@ export default async function Page() {
   const tableData = await getTableData();
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-between">
+    <main className="flex min-h-screen w-screen flex-col items-center justify-between">
       <HeaderNav />
-      <div className="flex flex-col grow px-5 py-4 space-y-4 w-full">
+      <article className="flex flex-col grow px-8 md:px-20 py-4 space-y-4 w-full">
         <p>
           Integer nunc diam, hendrerit sed nibh ut, congue pretium tellus. Aenean nec enim in purus porta hendrerit sit amet sit amet purus. Sed et enim at mauris rutrum semper at
           non diam. Sed vitae massa varius arcu mattis commodo eu elementum turpis. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.
@@ -19,7 +19,7 @@ export default async function Page() {
         </p>
         <DataTable columns={columns} data={tableData} />
         <SuggestionForm />
-      </div>
+      </article>
     </main>
   );
 }

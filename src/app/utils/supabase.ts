@@ -7,5 +7,5 @@ export const supabase = () => {
   if (!supabaseUrl || !supabaseKey) {
     return;
   }
-  createClient(supabaseUrl, supabaseKey);
+  return createClient(supabaseUrl, supabaseKey);
 };
