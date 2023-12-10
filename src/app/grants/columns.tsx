@@ -4,7 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown } from "lucide-react";
+import Image from "next/image";
 import { Grant } from "../types/grants";
+import TooltipIcon from "/public/TooltipIcon.svg";
 
 export const columns: ColumnDef<Grant>[] = [
   {
@@ -12,7 +14,7 @@ export const columns: ColumnDef<Grant>[] = [
     header: "Name",
   },
   {
-    accessorKey: "orgName",
+    accessorKey: "organizationName",
     header: "Organization Name",
   },
   {
@@ -47,7 +49,7 @@ export const columns: ColumnDef<Grant>[] = [
         currency: "USD",
       }).format(amount);
 
-      return <div className="text-right font-medium">{formatted}</div>;
+      return <div className="text-center font-medium">{formatted}</div>;
     },
   },
   {
@@ -60,7 +62,10 @@ export const columns: ColumnDef<Grant>[] = [
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap">{myDescription}</div>
+                <div className="flex flex-row gap-1">
+                  <div className="max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap">{myDescription}</div>
+                  <Image className="flex flex-col h-[16px] w-[16px]" src={TooltipIcon} alt="More Info Icon" priority />
+                </div>
               </TooltipTrigger>
               <TooltipContent>
                 <p className="max-w-md">{myDescription}</p>
@@ -73,11 +78,7 @@ export const columns: ColumnDef<Grant>[] = [
     },
   },
   {
-    accessorKey: "popServed",
-    header: "Population Served",
-  },
-  {
-    accessorKey: "indServed",
+    accessorKey: "industryServed",
     header: "Industries Served",
   },
 ];
