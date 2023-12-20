@@ -1,29 +1,30 @@
-"use client";
+'use client';
 
-import { Button } from "@/components/ui/button";
-import { Calendar } from "@/components/ui/calendar";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
-import { cn } from "@/lib/utils";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { Popover, PopoverContent, PopoverTrigger } from "@radix-ui/react-popover";
-import clsx from "clsx";
-import { format } from "date-fns";
-import { CalendarIcon } from "lucide-react";
-import Image from "next/image";
-import { useCallback, useEffect, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from "../../../components/ui/dropdown-menu";
-import { supabase } from "../../utils/supabase";
-import CaretUp from "/public/caret_up.svg";
+import { Button } from '@/components/ui/button';
+import { Calendar } from '@/components/ui/calendar';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { cn } from '@/lib/utils';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
+import clsx from 'clsx';
+import { format } from 'date-fns';
+import { CalendarIcon } from 'lucide-react';
+import Image from 'next/image';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import CaretUp from '/public/caret_up.svg';
 
 const formSchema = z.object({
   url: z.string().url(),
-  name: z.string().min(2).max(32).optional(),
-  industryServed: z.string().min(2).max(32).optional(), // Lets define an enum/list here in the future.
+  name: z.string().min(2).max(32),
+  industryServed: z.string().min(2).max(32), // Lets define an enum/list here in the future.
   deadline: z.date(),
-  organizationName: z.string().min(2).max(32).optional(),
+  organizationName: z.string().min(2).max(32),
 });
+
+async function submitForm(values: z.infer<typeof formSchema>) {}
 
 /**
  * Coming back to this later.
@@ -38,65 +39,49 @@ const formSchema = z.object({
 //   return <input placeholder={placeholder} {...field} ref={ref ?? undefined} />;
 // });
 
-export default function SuggestionForm() {
-  const myDB = supabase();
-  if (myDB === undefined) {
-    throw new Error("Failed to connect to DB. Unable to render Submission Form.");
-  }
+function SuggestionForm() {
+  // { submissionService }: { submissionService: GrantService }
   const [formSectionOpen, setFormSectionOpen] = useState<boolean>(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const formControlRef = useRef<HTMLButtonElement>(null);
-  const firstFormInputRef = useRef<HTMLInputElement>(null);
+  // const firstFormInputRef = useRef<HTMLInputElement>(null);
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      url: "", // 'https://www.goodgrantA.com',
-      name: "",
-      industryServed: "",
+      url: '', // 'https://www.goodgrantA.com',
+      name: '',
+      industryServed: '',
       deadline: new Date(),
-      organizationName: "",
+      organizationName: '',
     },
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!myDB) {
-      console.error("Failed to connect to DB. Unable to enter Grant Submission.");
-      return;
+    try {
+      const myResponse = await fetch('/api/grants', {
+        method: 'POST',
+        body: JSON.stringify(values),
+      });
+      const data = await myResponse.json();
+      console.debug('RESPONSE=', JSON.stringify(data));
+    } catch (error) {
+      console.error('Error on Submit. Error=', JSON.stringify(error));
     }
-    const { data, error } = await myDB
-      .from("listings")
-      .insert([
-        {
-          name: values.name,
-          organizationname: values.organizationName,
-          deadlineduedate: values.deadline,
-          url: values.url,
-          industriesserved: values.industryServed,
-          submitted: true,
-        },
-      ])
-      .select();
-
-    if (error) {
-      console.error("Failed to submit new Grant. E=", error);
-    }
-
-    console.log("SUBMITTED");
-    console.log("data, ", data);
+    console.log('SUBMITTED');
   }
 
   const openForm = useCallback((): void => {
     setFormSectionOpen(!formSectionOpen);
     if (!formSectionOpen) {
-      console.debug("open-form");
+      console.debug('open-form');
       formControlRef.current?.scrollIntoView();
     }
   }, [formSectionOpen]);
 
   const addKeyboardTabbing = useCallback(
     (e: KeyboardEvent) => {
-      console.log("Key Event: ", e.key);
-      if (e.key === "Enter" || e.key === " ") {
+      console.log('Key Event: ', e.key);
+      if (e.key === 'Enter' || e.key === ' ') {
         openForm();
       }
     },
@@ -104,14 +89,14 @@ export default function SuggestionForm() {
   );
 
   useEffect(() => {
-    document.addEventListener("keydown", addKeyboardTabbing, false);
-    return document.removeEventListener("keydown", addKeyboardTabbing, false);
+    document.addEventListener('keydown', addKeyboardTabbing, false);
+    return document.removeEventListener('keydown', addKeyboardTabbing, false);
   }, [addKeyboardTabbing, formControlRef]);
 
   return (
     <article
       className={`rounded-md justify-between mb-2 md:flex-col md:space-x-0 md:space-y-0 border-2 border-solid transition-all overflow-hidden ${
-        formSectionOpen ? "duration-700 ease-linear" : "duration-300 ease-linear"
+        formSectionOpen ? 'duration-700 ease-linear' : 'duration-300 ease-linear'
       }`}
     >
       <section className="group">
@@ -119,18 +104,18 @@ export default function SuggestionForm() {
           tabIndex={0}
           ref={formControlRef}
           className={clsx(
-            "rounded-sm w-full flex flex-row justify-between p-4 bg-gray-200 drop-shadow-md select-none" +
+            'rounded-sm w-full flex flex-row justify-between p-4 bg-gray-200 drop-shadow-md select-none' +
               // "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-              { "group-hover:mb-1": !formSectionOpen },
+              { 'group-hover:mb-1': !formSectionOpen },
           )}
           onClick={openForm}
         >
           <h2 className="font-semibold md:text-3xl">Have a Grant we missed?</h2>
           <Image
             alt="form closed icon"
-            className={clsx("transition-transform duration-300 w-[32px] h-[32px]", {
-              "rotate-180": formSectionOpen,
-              "group-hover:rotate-45": !formSectionOpen,
+            className={clsx('transition-transform duration-300 w-[32px] h-[32px]', {
+              'rotate-180': formSectionOpen,
+              'group-hover:rotate-45': !formSectionOpen,
             })}
             priority
             src={CaretUp}
@@ -200,8 +185,8 @@ export default function SuggestionForm() {
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
-                            <Button variant={"outline"} className={cn("w-[240px] pl-3 text-left font-normal", !field.value && "text-muted-foreground")}>
-                              {field.value ? format(field.value, "PPP") : <span>Pick a date</span>}
+                            <Button variant={'outline'} className={cn('w-[240px] pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>
+                              {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </FormControl>
@@ -232,13 +217,11 @@ export default function SuggestionForm() {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="outline" className="justify-start">
-                              {field.value ? field.value.slice(0, 1).toLocaleUpperCase() + field.value.slice(1) : "Choose Industry"}
+                              {field.value ? field.value.slice(0, 1).toLocaleUpperCase() + field.value.slice(1) : 'Choose Industry'}
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent className="w-56">
-                            {/* <DropdownMenuLabel>Industry Served</DropdownMenuLabel>
-                            <DropdownMenuSeparator /> */}
-                            <DropdownMenuRadioGroup value={field.value ? field.value : "non-profit"} onValueChange={field.onChange}>
+                            <DropdownMenuRadioGroup value={field.value ? field.value : 'non-profit'} onValueChange={field.onChange}>
                               <DropdownMenuRadioItem value="profit">Profit</DropdownMenuRadioItem>
                               <DropdownMenuRadioItem value="non-profit">Non-Profit</DropdownMenuRadioItem>
                             </DropdownMenuRadioGroup>
@@ -261,3 +244,5 @@ export default function SuggestionForm() {
     </article>
   );
 }
+
+export { SuggestionForm };
