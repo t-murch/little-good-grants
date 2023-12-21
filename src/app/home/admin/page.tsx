@@ -1,8 +1,8 @@
-import { getAllApprovedGrants } from '@/app/actions/grants';
+import { getUnapprovedSubmissions } from '@/app/actions/grants';
 
 export default async function Page() {
-  const allGrants = (await getAllApprovedGrants()) ?? [];
-  console.log('Grant Rows Count = ', allGrants?.length);
+  const allSubmissions = (await getUnapprovedSubmissions()) ?? [];
+  console.log('Grant Rows Count = ', allSubmissions?.length);
 
   return (
     <main className="flex p-10 min-h-screen w-screen flex-col items-center justify-between bg-back">
@@ -15,7 +15,7 @@ export default async function Page() {
         </nav>
       </section>
       <section className="lg:h-auto lg:w-full p-2 flex flex-col rounded-md border border-purple-600">
-        <div>{allGrants.length}</div>
+        <div>{allSubmissions.length}</div>
         <p>The admin Page</p>
       </section>
     </main>

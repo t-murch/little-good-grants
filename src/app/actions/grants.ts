@@ -17,7 +17,7 @@ const supabase = () => {
   return createClient<Database>(supabaseUrl, supabaseKey);
 };
 
-async function getUnapprovedSubmission(): Promise<GrantDAO[] | null> {
+async function getUnapprovedSubmissions(): Promise<GrantDAO[] | null> {
   let { data: listings, error } = await supabase().from('submissions').select('*');
   return handlReadRequest<GrantDAO[]>({ data: listings as GrantDAO[], error: error ?? undefined });
 }
@@ -31,7 +31,7 @@ async function getAllApprovedGrants(): Promise<GrantDAO[] | null> {
 
 async function submitGrantForApproval(grant: BaseGrant): Promise<InsertResponse | null> {
   const { error, status, statusText } = await supabase()
-    .from('listings')
+    .from('submissions')
     .insert(
       [
         {
@@ -49,4 +49,4 @@ async function submitGrantForApproval(grant: BaseGrant): Promise<InsertResponse 
   return handleInsertRequest({ data: { status: status, statusText: statusText }, error: error ?? undefined });
 }
 
-export { getAllApprovedGrants, getUnapprovedSubmission, submitGrantForApproval };
+export { getAllApprovedGrants, getUnapprovedSubmissions, submitGrantForApproval };

@@ -12,22 +12,28 @@ const RATE_LIMIT_RESPONSE = NextResponse.json({ success: false, message: 'Rate l
 export default async function middleware(request: NextRequest, event: NextFetchEvent) {
   const ip = request.ip ?? '127.0.0.1';
 
-  try {
-    const { success, pending, limit, reset, remaining } = await ratelimit.limit(`lggrants_${ip}`);
-    event.waitUntil(pending);
-    console.log('success?', success);
+  if (request.nextUrl.pathname.startsWith('/api/grants')) {
+    try {
+      const { success, pending, limit, reset, remaining } = await ratelimit.limit(`lggrants_${ip}`);
+      event.waitUntil(pending);
+      console.log('success?', success);
 
-    const res = success ? NextResponse.next() : RATE_LIMIT_RESPONSE;
+      const res = success ? NextResponse.next() : RATE_LIMIT_RESPONSE;
 
-    res.headers.set('X-RateLimit-Limit', limit.toString());
-    res.headers.set('X-RateLimit-Remaining', remaining.toString());
-    res.headers.set('X-RateLimit-Reset', reset.toString());
-    // return request;
-    return res;
-  } catch (error) {
-    console.error('Error updating rate limit on Submission. Error= ', error);
-    return NextResponse.next();
+      res.headers.set('X-RateLimit-Limit', limit.toString());
+      res.headers.set('X-RateLimit-Remaining', remaining.toString());
+      res.headers.set('X-RateLimit-Reset', reset.toString());
+      // return request;
+      return res;
+    } catch (error) {
+      console.error('Error updating rate limit on Submission. Error= ', error);
+      return NextResponse.next();
+    }
   }
+
+  // if (request.nextUrl.pathname.startsWith('/admin')) {
+
+  // }
 }
 
 export const config = {
