@@ -19,9 +19,9 @@ import CaretUp from '/public/caret_up.svg';
 const formSchema = z.object({
   url: z.string().url(),
   name: z.string().min(2).max(32),
-  industryServed: z.string().min(2).max(32), // Lets define an enum/list here in the future.
-  deadline: z.date(),
-  organizationName: z.string().min(2).max(32),
+  industries_served: z.string().min(2).max(32), // Lets define an enum/list here in the future.
+  deadline_date: z.date(),
+  organization_name: z.string().min(2).max(32),
 });
 
 async function submitForm(values: z.infer<typeof formSchema>) {}
@@ -50,9 +50,9 @@ function SuggestionForm() {
     defaultValues: {
       url: '', // 'https://www.goodgrantA.com',
       name: '',
-      industryServed: '',
-      deadline: new Date(),
-      organizationName: '',
+      industries_served: '',
+      deadline_date: new Date(),
+      organization_name: '',
     },
   });
 
@@ -146,7 +146,7 @@ function SuggestionForm() {
 
                 <FormField
                   control={form.control}
-                  name="organizationName"
+                  name="organization_name"
                   render={({ field }) => (
                     <FormItem className="flex flex-col min-h-[3.5rem]">
                       <FormLabel className="md:h-8">Name of Organization Providing Grant</FormLabel>
@@ -178,7 +178,7 @@ function SuggestionForm() {
 
                 <FormField
                   control={form.control}
-                  name="deadline"
+                  name="deadline_date"
                   render={({ field }) => (
                     <FormItem className="flex flex-col min-h-[3.5rem]">
                       <FormLabel className="md:h-8">Deadline</FormLabel>
@@ -209,7 +209,7 @@ function SuggestionForm() {
 
                 <FormField
                   control={form.control}
-                  name="industryServed"
+                  name="industries_served"
                   render={({ field }) => (
                     <FormItem className="flex flex-col min-h-[3.5rem] pr-1">
                       <FormLabel className="md:h-8">Industry Served</FormLabel>
