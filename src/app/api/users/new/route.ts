@@ -1,14 +1,14 @@
-import { submitGrantForApproval } from '@/app/actions/grants';
+import { signUpNewUser } from '@/app/actions/grants';
 import { createClient } from '@/app/actions/supabase';
 import { cookies } from 'next/headers';
 import { NextRequest } from 'next/server';
 
 export async function POST(request: NextRequest) {
   console.log('THE REQUEST = ', JSON.stringify(request));
-  const grant = await request.json();
-  console.log('THE GRANT = ', JSON.stringify(grant));
+  const newUser = await request.json();
+  console.log('THE USER = ', JSON.stringify(newUser));
   const cookieStore = cookies();
   const supabaseClient = createClient(cookieStore);
-  const myResponse = await submitGrantForApproval(() => supabaseClient, grant);
+  const myResponse = await signUpNewUser(() => supabaseClient, newUser);
   return Response.json({ myResponse });
 }

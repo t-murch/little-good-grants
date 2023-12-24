@@ -1,17 +1,6 @@
 import { Grant, GrantDAO } from '@/app/types/grants';
-import { Database } from '@/app/types/supabase';
-import { createClient } from '@supabase/supabase-js';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const DEFAULT_DESCRIPTION = 'No description found';
-
-const supabase = () => {
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Failed to connect to DB. Unable to enter Grant Submission.');
-  }
-  return createClient<Database>(supabaseUrl, supabaseKey);
-};
 
 const toGrant = (grantDAOs: GrantDAO[]): Grant[] => {
   return grantDAOs.map((grant) => {
@@ -29,4 +18,4 @@ const toGrant = (grantDAOs: GrantDAO[]): Grant[] => {
   });
 };
 
-export { supabase, toGrant };
+export { toGrant };

@@ -10,14 +10,9 @@ import { z } from 'zod';
 const loginSchema = z.object({
   email: z.string().email(),
   password: z.string().min(8).max(16),
-  confirmPassword: z.string().min(8).max(16),
 });
 
 const loginItemClass = 'flex h-9 min-w-[18rem] items-baseline justify-between';
-
-async function onSubmit(values: z.infer<typeof loginSchema>) {
-  console.log('**SUBMITTED**');
-}
 
 function Login() {
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -25,9 +20,22 @@ function Login() {
     defaultValues: {
       email: '',
       password: '',
-      confirmPassword: '',
     },
   });
+
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
+    console.log('**SUBMITT-ING**');
+    try {
+      const myResponse = await fetch('/api/users/login', {
+        method: 'POST',
+        body: JSON.stringify(values),
+      });
+      const data = await myResponse.json();
+      console.debug('RESPONSE=', JSON.stringify(data));
+    } catch (error) {
+      console.error('Error on User Login. Error=', JSON.stringify(error));
+    }
+  }
 
   return (
     <section className="flex h-auto min-w-[21rem] rounded-md border-6 bg-purple-400 p-4 shadow-2xl">
@@ -59,19 +67,10 @@ function Login() {
             )}
           />
 
-          <FormField
-            control={form.control}
-            name="confirmPassword"
-            render={({ field }) => (
-              <FormItem className={loginItemClass}>
-                <FormLabel>Confirm</FormLabel>
-                <FormControl>
-                  <Input placeholder="password" type="password" className="h-7 max-w-[13rem] rounded-sm px-1" {...field} />
-                </FormControl>
-              </FormItem>
-            )}
-          />
-          <div className="flex w-full mt-2 justify-end">
+          <div className="flex w-full mt-2 justify-between items-center">
+            <a className="text-sm font-light" href="/home/signup">
+              Create Account
+            </a>
             <Button type="submit">Submit</Button>
           </div>
         </form>
@@ -80,4 +79,4 @@ function Login() {
   );
 }
 
-export { Login };
+export { Login, loginSchema };

@@ -1,36 +1,27 @@
 'use server';
 
-import { Database } from '@/app/types/supabase';
-import { createClient } from '@supabase/supabase-js';
-import { BaseGrant, GrantDAO } from '../types/grants';
-import { InsertResponse, handlReadRequest, handleInsertRequest } from './baseController';
+import { InsertResponse, handlReadRequest, handleInsertRequest } from '@/app/actions/baseController';
+import { BaseGrant, GrantDAO } from '@/app/types/grants';
+import { AuthError, Session, SupabaseClient, User } from '@supabase/supabase-js';
+import isStrongPassword from 'validator/es/lib/isStrongPassword';
+import { z } from 'zod';
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!;
 const DEFAULT_DESCRIPTION = 'No description found';
 
-const supabase = () => {
-  if (!supabaseUrl || !supabaseKey) {
-    throw new Error('Failed to connect to DB. Unable to enter Grant Submission.');
-  }
-  console.debug('Creating Supabase Client. Should only happen once.');
-  return createClient<Database>(supabaseUrl, supabaseKey);
-};
-
-async function getUnapprovedSubmissions(): Promise<GrantDAO[] | null> {
-  let { data: listings, error } = await supabase().from('submissions').select('*');
+async function getUnapprovedSubmissions(supabaseClient: () => SupabaseClient): Promise<GrantDAO[] | null> {
+  let { data: listings, error } = await supabaseClient().from('submissions').select('*');
   return handlReadRequest<GrantDAO[]>({ data: listings as GrantDAO[], error: error ?? undefined });
 }
 
 // NEW DESIGN WITH SEPARATE SUBMISSION AND LISTING TABLES
-async function getAllApprovedGrants(): Promise<GrantDAO[] | null> {
+async function getAllApprovedGrants(supabaseClient: () => SupabaseClient): Promise<GrantDAO[] | null> {
   // console.debug('Getting Listings');
-  const { data: listings, error } = await supabase().from('listings').select('*');
+  const { data: listings, error } = await supabaseClient().from('listings').select('*');
   return handlReadRequest<GrantDAO[]>({ data: listings as GrantDAO[], error: error ?? undefined });
 }
 
-async function submitGrantForApproval(grant: BaseGrant): Promise<InsertResponse | null> {
-  const { error, status, statusText } = await supabase()
+async function submitGrantForApproval(supabaseClient: () => SupabaseClient, grant: BaseGrant): Promise<InsertResponse | null> {
+  const { error, status, statusText } = await supabaseClient()
     .from('submissions')
     .insert(
       [
@@ -49,4 +40,75 @@ async function submitGrantForApproval(grant: BaseGrant): Promise<InsertResponse 
   return handleInsertRequest({ data: { status: status, statusText: statusText }, error: error ?? undefined });
 }
 
-export { getAllApprovedGrants, getUnapprovedSubmissions, submitGrantForApproval };
+const PASSWORD_VALIDATION = 'Password must be 8-12 alphanumeric-characters, with atleast one uppercase character and symbol. ';
+
+const signUpSchema = z
+  .object({
+    email: z.string().email(),
+    password: z.string().min(8, { message: PASSWORD_VALIDATION }).max(16),
+    confirmPassword: z.string().min(8).max(16),
+  })
+  .superRefine(({ confirmPassword, password }, ctx) => {
+    if (confirmPassword !== password) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'The passwords do not match',
+        path: ['confirmPassword'],
+      });
+    }
+    if (!isStrongPassword(password)) {
+      ctx.addIssue({
+        code: 'custom',
+        message: 'The password is not strong enough',
+        path: ['password'],
+      });
+    }
+  });
+
+const loginSchema = z.object({
+  email: z.string().email(),
+  password: z.string().min(8).max(16),
+});
+
+async function signUpNewUser(supabaseClient: () => SupabaseClient, values: z.infer<typeof signUpSchema>) {
+  const myResult: { data: { user: User | null; session: Session | null }; error: AuthError | any } = { data: { user: null, session: null }, error: null };
+  // const { email: userEmail, password: userPassword } = signUpSchema.parse(values);
+  const some = signUpSchema.safeParse(values);
+
+  if (!some.success) {
+    myResult.error = some.error;
+    return myResult;
+  }
+  const { data, error } = await supabaseClient().auth.signUp({
+    email: some.data.email,
+    password: some.data.password,
+    options: {
+      emailRedirectTo: 'http//localhost.com/home/login',
+    },
+  });
+  myResult.data = data;
+  myResult.error = error;
+  console.log('**SUBMITT-ING**', values);
+  return myResult;
+}
+
+async function loginUser(supabaseClient: () => SupabaseClient, values: z.infer<typeof loginSchema>) {
+  const myResult: { data: { user: User | null; session: Session | null }; error: AuthError | any } = { data: { user: null, session: null }, error: null };
+  // const { email: userEmail, password: userPassword } = signUpSchema.parse(values);
+  const some = loginSchema.safeParse(values);
+
+  if (!some.success) {
+    myResult.error = some.error;
+    return myResult;
+  }
+  const { data, error } = await supabaseClient().auth.signInWithPassword({
+    email: some.data.email,
+    password: some.data.password,
+  });
+  myResult.data = data;
+  myResult.error = error;
+  console.log('**SUBMITT-ED**', values);
+  return myResult;
+}
+
+export { getAllApprovedGrants, getUnapprovedSubmissions, loginUser, signUpNewUser, submitGrantForApproval };

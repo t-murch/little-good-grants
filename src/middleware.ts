@@ -2,9 +2,13 @@ import { CookieOptions, createServerClient } from '@supabase/ssr';
 import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 import { NextFetchEvent, NextRequest, NextResponse } from 'next/server';
+import { supabaseKey, supabaseUrl } from './app/actions/supabase';
 
 const ratelimit = new Ratelimit({
-  redis: Redis.fromEnv(),
+  redis: new Redis({
+    url: process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_URL ?? '',
+    token: process.env.NEXT_PUBLIC_UPSTASH_REDIS_REST_TOKEN ?? '',
+  }),
   limiter: Ratelimit.fixedWindow(2, '10 s'),
 });
 
@@ -41,8 +45,10 @@ export default async function middleware(request: NextRequest, event: NextFetchE
       },
     });
     // Create authenticated Supabase Client.
-    // const supabase = createMiddlewareClient({ req, res })
-    const supabase = createServerClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+    if (!supabaseUrl || !supabaseKey) {
+      throw new Error('Failed to connect to DB. Unable to enter Grant Submission.');
+    }
+    const supabase = createServerClient(supabaseUrl, supabaseKey, {
       cookies: {
         get(name: string) {
           return request.cookies.get(name)?.value;

@@ -1,7 +1,11 @@
 import { getUnapprovedSubmissions } from '@/app/actions/grants';
+import { createClient } from '@/app/actions/supabase';
+import { cookies } from 'next/headers';
 
 export default async function Page() {
-  const allSubmissions = (await getUnapprovedSubmissions()) ?? [];
+  const cookieStore = cookies();
+  const supabaseClient = createClient(cookieStore);
+  const allSubmissions = (await getUnapprovedSubmissions(() => supabaseClient)) ?? [];
   console.log('Grant Rows Count = ', allSubmissions?.length);
 
   return (

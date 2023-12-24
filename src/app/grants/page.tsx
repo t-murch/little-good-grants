@@ -1,9 +1,9 @@
-import { Grant } from "@/app/types/grants";
-import { testData } from "@/app/ui/testing/grantlist";
-import { columns } from "./columns";
-import { DataTable } from "./data-table";
+import { Grant } from '@/app/types/grants';
+import { testData } from '@/app/ui/testing/grantlist';
+import { columns } from './columns';
+import { DataTable } from './data-table';
 
-export async function getTableData(): Promise<Grant[]> {
+async function getTableData(): Promise<Grant[]> {
   return new Promise((resolve) =>
     setTimeout(() => {
       return resolve(testData);
