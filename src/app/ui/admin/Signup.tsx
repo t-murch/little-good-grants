@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import isStrongPassword from 'validator/es/lib/isStrongPassword';
 import { z } from 'zod';
@@ -38,6 +39,7 @@ const signUpSchema = z
 const loginItemClass = 'flex h-9 min-w-[19rem] items-baseline justify-between';
 
 function SignUp() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
@@ -55,6 +57,13 @@ function SignUp() {
       });
       const data = await myResponse.json();
       console.debug('RESPONSE=', JSON.stringify(data));
+      if (data?.error === null) {
+        console.log('Redirect should be occurring. ');
+        router.push('/home/login');
+        // redirect('/home/login');
+      } else {
+        console.log('*** ADVISE USER OF ERROR SOMEHOW. ***');
+      }
     } catch (error) {
       console.error('Error on New Account Sign Up. Error=', JSON.stringify(error));
     }

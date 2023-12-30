@@ -10,5 +10,5 @@ export async function POST(request: NextRequest) {
   const cookieStore = cookies();
   const supabaseClient = createClient(cookieStore);
   const myResponse = await loginUser(() => supabaseClient, newUser);
-  return Response.json({ myResponse });
+  return Response.json(myResponse);
 }

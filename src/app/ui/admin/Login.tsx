@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useRouter } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -15,6 +16,7 @@ const loginSchema = z.object({
 const loginItemClass = 'flex h-9 min-w-[18rem] items-baseline justify-between';
 
 function Login() {
+  const router = useRouter();
   const form = useForm<z.infer<typeof loginSchema>>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -25,13 +27,24 @@ function Login() {
 
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     console.log('**SUBMITT-ING**');
+    let data,
+      error = null;
     try {
       const myResponse = await fetch('/api/users/login', {
         method: 'POST',
         body: JSON.stringify(values),
       });
-      const data = await myResponse.json();
-      console.debug('RESPONSE=', JSON.stringify(data));
+      const returnData = await myResponse.json();
+      data = returnData.data;
+      error = returnData.error;
+      console.debug('RESPONSE=', JSON.stringify({ data, error }));
+      if (error === null) {
+        console.log('Redirect should be occurring. ');
+        router.push('/home/admin');
+        // redirect('/home/admin');
+      } else {
+        console.log('*** ADVISE USER OF ERROR SOMEHOW. ***');
+      }
     } catch (error) {
       console.error('Error on User Login. Error=', JSON.stringify(error));
     }

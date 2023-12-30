@@ -8,6 +8,9 @@ import { z } from 'zod';
 
 const DEFAULT_DESCRIPTION = 'No description found';
 
+type DefaultReturn = { data: { user: User | null; session: Session | null }; error: AuthError | any };
+const getDefaultReturn = () => ({ data: { user: null, session: null }, error: null });
+
 async function getUnapprovedSubmissions(supabaseClient: () => SupabaseClient): Promise<GrantDAO[] | null> {
   let { data: listings, error } = await supabaseClient().from('submissions').select('*');
   return handlReadRequest<GrantDAO[]>({ data: listings as GrantDAO[], error: error ?? undefined });
@@ -71,17 +74,17 @@ const loginSchema = z.object({
 });
 
 async function signUpNewUser(supabaseClient: () => SupabaseClient, values: z.infer<typeof signUpSchema>) {
-  const myResult: { data: { user: User | null; session: Session | null }; error: AuthError | any } = { data: { user: null, session: null }, error: null };
+  const myResult: DefaultReturn = getDefaultReturn();
   // const { email: userEmail, password: userPassword } = signUpSchema.parse(values);
-  const some = signUpSchema.safeParse(values);
+  const validValues = signUpSchema.safeParse(values);
 
-  if (!some.success) {
-    myResult.error = some.error;
+  if (!validValues.success) {
+    myResult.error = validValues.error;
     return myResult;
   }
   const { data, error } = await supabaseClient().auth.signUp({
-    email: some.data.email,
-    password: some.data.password,
+    email: validValues.data.email,
+    password: validValues.data.password,
     options: {
       emailRedirectTo: 'http//localhost.com/home/login',
     },
@@ -93,17 +96,17 @@ async function signUpNewUser(supabaseClient: () => SupabaseClient, values: z.inf
 }
 
 async function loginUser(supabaseClient: () => SupabaseClient, values: z.infer<typeof loginSchema>) {
-  const myResult: { data: { user: User | null; session: Session | null }; error: AuthError | any } = { data: { user: null, session: null }, error: null };
+  const myResult: DefaultReturn = getDefaultReturn();
   // const { email: userEmail, password: userPassword } = signUpSchema.parse(values);
-  const some = loginSchema.safeParse(values);
+  const validValues = loginSchema.safeParse(values);
 
-  if (!some.success) {
-    myResult.error = some.error;
+  if (!validValues.success) {
+    myResult.error = validValues.error;
     return myResult;
   }
   const { data, error } = await supabaseClient().auth.signInWithPassword({
-    email: some.data.email,
-    password: some.data.password,
+    email: validValues.data.email,
+    password: validValues.data.password,
   });
   myResult.data = data;
   myResult.error = error;
@@ -111,4 +114,14 @@ async function loginUser(supabaseClient: () => SupabaseClient, values: z.infer<t
   return myResult;
 }
 
-export { getAllApprovedGrants, getUnapprovedSubmissions, loginUser, signUpNewUser, submitGrantForApproval };
+async function logoutUser(supabaseClient: () => SupabaseClient) {
+  const myResult: DefaultReturn = getDefaultReturn();
+  const { error } = await supabaseClient().auth.signOut();
+  if (error) {
+    myResult.error = error;
+    return myResult;
+  }
+  return myResult;
+}
+
+export { getAllApprovedGrants, getUnapprovedSubmissions, loginUser, logoutUser, signUpNewUser, submitGrantForApproval };
