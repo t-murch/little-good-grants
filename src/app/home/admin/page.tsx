@@ -1,6 +1,10 @@
 import { getUnapprovedSubmissions } from '@/app/actions/grants';
 import { createClient } from '@/app/actions/supabase';
+import { adminColumns, columns } from '@/app/grants/columns';
+import { DataTable } from '@/app/grants/data-table';
+import { grantDAOtoGrant } from '@/app/types/grants';
 import { Logout } from '@/app/ui/admin/Logout';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { cookies } from 'next/headers';
 
 export default async function Page() {
@@ -19,9 +23,28 @@ export default async function Page() {
           </article>
         </section>
         <section className="lg:h-auto lg:w-full p-2 flex flex-col rounded-md border border-purple-600">
-          <h2 className="font-bold text-l">Pending Submissions</h2>
-          <div>{allSubmissions.length}</div>
-          {/* <p>The admin Page</p> */}
+          <Accordion type="single" collapsible>
+            <AccordionItem value="item-1">
+              <AccordionTrigger className='font-bold px-4'>Pending Submissions {allSubmissions.length}</AccordionTrigger>
+              <AccordionContent className='px-4'>
+                <>
+                  Rows of Submissions
+                  <DataTable columns={adminColumns} data={grantDAOtoGrant(allSubmissions)} />
+                </>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
+          <Accordion type="single" collapsible>
+            <AccordionItem value="item-1">
+              <AccordionTrigger className='font-bold px-4'>Active Grants {allSubmissions.length}</AccordionTrigger>
+              <AccordionContent className='px-4'>
+                <>
+                  Rows of Submissions
+                  <DataTable columns={adminColumns} data={grantDAOtoGrant(allSubmissions)} />
+                </>
+              </AccordionContent>
+            </AccordionItem>
+          </Accordion>
         </section>
       </div>
     </main>

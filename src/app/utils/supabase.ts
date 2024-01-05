@@ -10,7 +10,7 @@ const toGrant = (grantDAOs: GrantDAO[]): Grant[] => {
       name: grant.name,
       organization_name: grant.organization_name,
       url: grant.url,
-      amount: grant.amount ?? 'Unknown',
+      amount: grant.amount ?? null,
       date_added: grant.date_added,
       description: grant.description ?? DEFAULT_DESCRIPTION,
     };

@@ -1,20 +1,13 @@
-import { getAllApprovedGrants } from '@/app/actions/grants';
-import { createClient } from '@/app/actions/supabase';
 import { columns } from '@/app/grants/columns';
 import { DataTable } from '@/app/grants/data-table';
-import { Grant } from '@/app/types/grants';
+import { Grant, getTableData } from '@/app/types/grants';
 import { HeaderNav } from '@/app/ui/home/headernav';
 import { SuggestionForm } from '@/app/ui/home/suggestionForm';
-import { toGrant } from '@/app/utils/supabase';
-import { cookies } from 'next/headers';
 
 export default async function Page() {
   const tableData: Grant[] = [];
-  const cookieStore = cookies();
-  const supabaseClient = createClient(cookieStore);
-  const fetchedData = (await getAllApprovedGrants(() => supabaseClient)) ?? [];
-  console.debug('fetched %d rows of Grants', fetchedData.length);
-  tableData.push(...toGrant(fetchedData));
+  const testData = await getTableData();
+  tableData.push(...testData);
 
   return (
     <main className="flex min-h-screen w-screen flex-col items-center justify-between">
