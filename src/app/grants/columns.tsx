@@ -5,8 +5,9 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/comp
 import { ColumnDef } from '@tanstack/react-table';
 import { ArrowUpDown } from 'lucide-react';
 import Image from 'next/image';
-import { Grant } from '../types/grants';
+import { Grant } from '@/app/types/grants';
 import TooltipIcon from '/public/TooltipIcon.svg';
+import { Checkbox } from '@/components/ui/checkbox';
 
 export const columns: ColumnDef<Grant>[] = [
   {
@@ -89,10 +90,31 @@ export const mobileDefaultColumns = mobileDefaultColumnIDs.reduce((acc: Record<s
   return acc;
 }, {});
 
-const adminColumns: ColumnDef<Grant>[] = [
+export const adminColumns: ColumnDef<Grant>[] = [
+  ...columns,
+  {
+    accessorKey: 'approved',
+    header: 'Approved',
+    cell: ({ row }) => {
+      const isApproved: boolean = row.getValue('approved');
+      return (
+        <div className='flex items-center justify-center'>
+          <Checkbox checked={isApproved} onCheckedChange={() => 'CLICK -- Approved'} />
+        </div>
+      );
+    }
+  },
   {
     accessorKey: 'submitted',
     header: 'Submitted',
+    cell: ({ row }) => {
+      const isSubmitted: boolean = row.getValue('submitted');
+      return (
+        <div className='flex items-center justify-center'>
+          <Checkbox className='flex items-center justify-center' checked={isSubmitted} onCheckedChange={() => 'CLICK -- Submitted'} />
+        </div>
+      )
+    }
   },
   {
     accessorKey: 'subDate',
