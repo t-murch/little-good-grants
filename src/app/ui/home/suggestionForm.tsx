@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
@@ -36,7 +37,7 @@ async function submitForm(values: z.infer<typeof formSchema>) {}
 // } & InputHTMLAttributes<HTMLInputElement>;
 // const FormInput = forwardRef<HTMLInputElement, FormInputProps>(function FormInput(props: FormInputProps, ref) {
 //   const { field, placeholder } = props;
-//   return <input placeholder={placeholder} {...field} ref={ref ?? undefined} />;
+//   return <Input placeholder={placeholder} {...field} ref={ref ?? undefined} />;
 // });
 
 function SuggestionForm() {
@@ -132,10 +133,10 @@ function SuggestionForm() {
                   control={form.control}
                   name="name"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col min-h-[3.5rem] pl-1">
+                    <FormItem className="flex flex-col min-h-[3.5rem] pl-1 mb-1">
                       <FormLabel className="md:h-8">Name of Grant</FormLabel>
                       <FormControl>
-                        <input
+                        <Input
                           className="h-[40px] py-2 pl-3 pr-4 border border-input bg-background hover:border-accent hover:text-accent-foreground inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
                           {...field}
                         />
@@ -151,7 +152,7 @@ function SuggestionForm() {
                     <FormItem className="flex flex-col min-h-[3.5rem]">
                       <FormLabel className="md:h-8">Name of Organization Providing Grant</FormLabel>
                       <FormControl>
-                        <input
+                        <Input
                           className="h-[40px] py-2 pl-3 pr-4 border border-input bg-background hover:border-accent hover:text-accent-foreground inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
                           {...field}
                         />
@@ -167,7 +168,7 @@ function SuggestionForm() {
                     <FormItem className="flex flex-col min-h-[3.5rem]">
                       <FormLabel className="md:h-8">URL for Grant</FormLabel>
                       <FormControl>
-                        <input
+                        <Input
                           className="h-[40px] py-2 pl-3 pr-4 border border-input bg-background hover:border-accent hover:text-accent-foreground inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
                           {...field}
                         />
