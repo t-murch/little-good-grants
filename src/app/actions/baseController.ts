@@ -38,7 +38,9 @@ function handlReadRequest<T>(request: SupabaseReadResponse<T>): T | null {
   }
 }
 
-function handleInsertRequest(request: SupabaseInsertResponse): InsertResponse | null {
+function handleInsertRequest(
+  request: SupabaseInsertResponse,
+): InsertResponse | null {
   try {
     if (request.error) {
       handleSupabaseError(request.error);
@@ -63,4 +65,11 @@ function handleSupabaseError(error: PostgrestError): PostgrestError {
   return error;
 }
 
-export { handlReadRequest, handleInsertRequest, handleSupabaseError, type InsertResponse, type SupabaseInsertResponse, type SupabaseReadResponse };
+export {
+  handlReadRequest,
+  handleInsertRequest,
+  handleSupabaseError,
+  type InsertResponse,
+  type SupabaseInsertResponse,
+  type SupabaseReadResponse,
+};
