@@ -1,4 +1,4 @@
-import { testData } from "@/app/ui/testing/grantlist";
+import { testData } from '@/app/ui/testing/grantlist';
 
 type BaseGrant = {
   // approved: boolean;
@@ -31,7 +31,7 @@ interface GrantDAO {
   organization_name: string;
   submitted: boolean;
   url: string;
-};
+}
 
 export const grantDAOtoGrant = (grantDAOs: GrantDAO[]) => {
   return grantDAOs.map((grantDAO) => {
@@ -46,7 +46,7 @@ export const grantDAOtoGrant = (grantDAOs: GrantDAO[]) => {
       organization_name: grantDAO.organization_name,
       submitted: false,
       submission_date: '',
-      url: grantDAO.url
+      url: grantDAO.url,
     };
     return myGrant;
   });
@@ -66,5 +66,4 @@ export async function getTableData(): Promise<Grant[]> {
       return resolve(testData);
     }, 1500),
   );
-};
-
+}

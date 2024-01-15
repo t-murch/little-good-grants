@@ -1,13 +1,13 @@
-"use client";
+'use client';
 
-import useWindowSize from "@/app/utils/useWindowSize";
-import { Button } from "@/components/ui/button";
+import useWindowSize from '@/app/utils/useWindowSize';
+import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+} from '@/components/ui/dropdown-menu';
 import {
   Table,
   TableBody,
@@ -15,7 +15,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from '@/components/ui/table';
 import {
   ColumnDef,
   SortingState,
@@ -25,8 +25,8 @@ import {
   getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
-} from "@tanstack/react-table";
-import * as React from "react";
+} from '@tanstack/react-table';
+import * as React from 'react';
 
 interface DataTableProps<TData, TValue> {
   // columns: ColumnDef<TData, TValue>[];
@@ -106,10 +106,10 @@ export function DataTable<TData, TValue>({
       <Table className="rounded-md overflow-hidden">
         <TableHeader className="sticky top-0 bg-secondary">
           {table.getHeaderGroups().map((headerGroup) => (
-            <TableRow className="text-gray-900" key={headerGroup.id}>
+            <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
                 return (
-                  <TableHead key={header.id}>
+                  <TableHead className="text-gray-900" key={header.id}>
                     {header.isPlaceholder
                       ? null
                       : flexRender(
@@ -127,7 +127,7 @@ export function DataTable<TData, TValue>({
             table.getRowModel().rows.map((row) => (
               <TableRow
                 key={row.id}
-                data-state={row.getIsSelected() && "selected"}
+                data-state={row.getIsSelected() && 'selected'}
               >
                 {row.getVisibleCells().map((cell) => (
                   <TableCell key={cell.id}>
