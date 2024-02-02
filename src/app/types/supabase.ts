@@ -11,50 +11,86 @@ export interface Database {
     Tables: {
       listings: {
         Row: {
-          amount: number
-          approved: boolean
-          dateadded: string
-          deadlineduedate: string
+          amount: number | null
+          date_added: string
+          deadline_date: string
           description: string | null
           id: number
-          industriesserved: string
-          lastupdated: string | null
+          industries_served: string
+          last_updated: string | null
           name: string
-          organizationname: string
-          populationserved: string
-          submissiondate: string | null
+          organization_name: string
           submitted: boolean
           url: string
         }
         Insert: {
-          amount: number
-          approved?: boolean
-          dateadded?: string
-          deadlineduedate: string
+          amount?: number | null
+          date_added?: string
+          deadline_date: string
           description?: string | null
           id?: number
-          industriesserved: string
-          lastupdated?: string | null
+          industries_served: string
+          last_updated?: string | null
           name: string
-          organizationname: string
-          populationserved: string
-          submissiondate?: string | null
+          organization_name: string
           submitted?: boolean
           url: string
         }
         Update: {
-          amount?: number
-          approved?: boolean
-          dateadded?: string
-          deadlineduedate?: string
+          amount?: number | null
+          date_added?: string
+          deadline_date?: string
           description?: string | null
           id?: number
-          industriesserved?: string
-          lastupdated?: string | null
+          industries_served?: string
+          last_updated?: string | null
           name?: string
-          organizationname?: string
-          populationserved?: string
-          submissiondate?: string | null
+          organization_name?: string
+          submitted?: boolean
+          url?: string
+        }
+        Relationships: []
+      }
+      submissions: {
+        Row: {
+          amount: number | null
+          approved: boolean
+          date_added: string
+          deadline_date: string
+          description: string | null
+          id: number
+          industries_served: string
+          last_updated: string | null
+          name: string
+          organization_name: string
+          submitted: boolean
+          url: string
+        }
+        Insert: {
+          amount?: number | null
+          approved?: boolean
+          date_added?: string
+          deadline_date: string
+          description?: string | null
+          id?: number
+          industries_served: string
+          last_updated?: string | null
+          name: string
+          organization_name: string
+          submitted?: boolean
+          url: string
+        }
+        Update: {
+          amount?: number | null
+          approved?: boolean
+          date_added?: string
+          deadline_date?: string
+          description?: string | null
+          id?: number
+          industries_served?: string
+          last_updated?: string | null
+          name?: string
+          organization_name?: string
           submitted?: boolean
           url?: string
         }
@@ -75,3 +111,83 @@ export interface Database {
     }
   }
 }
+
+export type Tables<
+  PublicTableNameOrOptions extends
+    | keyof (Database["public"]["Tables"] & Database["public"]["Views"])
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+        Database[PublicTableNameOrOptions["schema"]]["Views"])
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? (Database[PublicTableNameOrOptions["schema"]]["Tables"] &
+      Database[PublicTableNameOrOptions["schema"]]["Views"])[TableName] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : PublicTableNameOrOptions extends keyof (Database["public"]["Tables"] &
+      Database["public"]["Views"])
+  ? (Database["public"]["Tables"] &
+      Database["public"]["Views"])[PublicTableNameOrOptions] extends {
+      Row: infer R
+    }
+    ? R
+    : never
+  : never
+
+export type TablesInsert<
+  PublicTableNameOrOptions extends
+    | keyof Database["public"]["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
+  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+      Insert: infer I
+    }
+    ? I
+    : never
+  : never
+
+export type TablesUpdate<
+  PublicTableNameOrOptions extends
+    | keyof Database["public"]["Tables"]
+    | { schema: keyof Database },
+  TableName extends PublicTableNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicTableNameOrOptions["schema"]]["Tables"]
+    : never = never
+> = PublicTableNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicTableNameOrOptions["schema"]]["Tables"][TableName] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : PublicTableNameOrOptions extends keyof Database["public"]["Tables"]
+  ? Database["public"]["Tables"][PublicTableNameOrOptions] extends {
+      Update: infer U
+    }
+    ? U
+    : never
+  : never
+
+export type Enums<
+  PublicEnumNameOrOptions extends
+    | keyof Database["public"]["Enums"]
+    | { schema: keyof Database },
+  EnumName extends PublicEnumNameOrOptions extends { schema: keyof Database }
+    ? keyof Database[PublicEnumNameOrOptions["schema"]]["Enums"]
+    : never = never
+> = PublicEnumNameOrOptions extends { schema: keyof Database }
+  ? Database[PublicEnumNameOrOptions["schema"]]["Enums"][EnumName]
+  : PublicEnumNameOrOptions extends keyof Database["public"]["Enums"]
+  ? Database["public"]["Enums"][PublicEnumNameOrOptions]
+  : never

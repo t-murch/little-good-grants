@@ -1,12 +1,7 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
-  content: [
-    './pages/**/*.{ts,tsx}',
-    './components/**/*.{ts,tsx}',
-    './app/**/*.{ts,tsx}',
-    './src/**/*.{ts,tsx}',
-	],
+  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
   theme: {
     container: {
       center: true,
@@ -15,8 +10,20 @@ module.exports = {
         "2xl": "1400px",
       },
     },
+    // mytheme: {
+    //   primary: "#401e15",
+    //   secondary: "#8d5c3e",
+    //   accent: "#fcb040",
+    //   neutral: "#e5ceb5",
+    //   "base-100": "#ffffff",
+    //   info: "#ffffff",
+    //   success: "#AE9167",
+    //   warning: "#ffffff",
+    //   error: "#ffffff",
+    // },
     extend: {
       colors: {
+        // border: "#8d5c3e",
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
@@ -24,10 +31,12 @@ module.exports = {
         foreground: "hsl(var(--foreground))",
         primary: {
           DEFAULT: "hsl(var(--primary))",
+          // DEFAULT: "#401e15",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
+          // DEFAULT: "#8d5c3e",
           foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
@@ -40,6 +49,7 @@ module.exports = {
         },
         accent: {
           DEFAULT: "hsl(var(--accent))",
+          // DEFAULT: "#fcb040",
           foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
@@ -73,4 +83,4 @@ module.exports = {
     },
   },
   plugins: [require("tailwindcss-animate")],
-}
+};
