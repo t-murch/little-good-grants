@@ -2,12 +2,29 @@
 
 import { Button } from '@/components/ui/button';
 import { Calendar } from '@/components/ui/calendar';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuRadioGroup, DropdownMenuRadioItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuRadioGroup,
+  DropdownMenuRadioItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { Popover, PopoverContent, PopoverTrigger } from '@radix-ui/react-popover';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@radix-ui/react-popover';
 import clsx from 'clsx';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
@@ -97,37 +114,52 @@ function SuggestionForm() {
   return (
     <article
       className={`rounded-md justify-between mb-2 md:flex-col md:space-x-0 md:space-y-0 border-2 border-solid transition-all overflow-hidden ${
-        formSectionOpen ? 'duration-700 ease-linear' : 'duration-300 ease-linear'
+        formSectionOpen
+          ? 'duration-700 ease-linear'
+          : 'duration-300 ease-linear'
       }`}
     >
       <section className="group">
-        <Button
-          tabIndex={0}
-          ref={formControlRef}
-          className={clsx(
-            'rounded-sm w-full flex flex-row justify-between p-4 bg-gray-200 drop-shadow-md select-none' +
-              // "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-              { 'group-hover:mb-1': !formSectionOpen },
-          )}
-          onClick={openForm}
-        >
-          <h2 className="font-semibold md:text-3xl">Have a Grant we missed?</h2>
-          <Image
-            alt="form closed icon"
-            className={clsx('transition-transform duration-300 w-[32px] h-[32px]', {
-              'rotate-180': formSectionOpen,
-              'group-hover:rotate-45': !formSectionOpen,
-            })}
-            priority
-            src={CaretUp}
-          />
-        </Button>
+        <div className="bg-secondary">
+          <Button
+            tabIndex={0}
+            ref={formControlRef}
+            className={clsx(
+              'rounded-sm w-full flex flex-row justify-between p-4 bg-secondary text-gray-900 drop-shadow-md select-none' +
+                // "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+                { 'group-hover:mb-1': !formSectionOpen },
+            )}
+            onClick={openForm}
+          >
+            <h2 className="font-semibold md:text-3xl">
+              Have a Grant we missed?
+            </h2>
+            <Image
+              alt="form closed icon"
+              className={clsx(
+                'transition-transform duration-300 w-[32px] h-[32px]',
+                {
+                  'rotate-180': formSectionOpen,
+                  'group-hover:rotate-45': !formSectionOpen,
+                },
+              )}
+              priority
+              src={CaretUp}
+            />
+          </Button>
+        </div>
         <section
           className={`transition-transform duration-700 ease-in-out overflow-hidden bottom-0 ${formSectionOpen ? `h-max p-4 ` : `h-0 group-hover:h-10 group-focus:h-10 px-4 py-0`}`}
         >
-          <p className="px-1 pb-4">Please, drop us the link and any other details you have to have Grant submitted for addition to the list!</p>
+          <p className="px-1 pb-4">
+            Please, drop us the link and any other details you have to have
+            Grant submitted for addition to the list!
+          </p>
           <Form {...form}>
-            <form className={`transition-all flex flex-col ${formSectionOpen ? `flex` : `hidden`}`} onSubmit={form.handleSubmit(onSubmit)}>
+            <form
+              className={`transition-all flex flex-col ${formSectionOpen ? `flex` : `hidden`}`}
+              onSubmit={form.handleSubmit(onSubmit)}
+            >
               <div className="flex flex-col lg:flex-row gap-4 mb-3 overflow-auto">
                 <FormField
                   control={form.control}
@@ -150,7 +182,9 @@ function SuggestionForm() {
                   name="organization_name"
                   render={({ field }) => (
                     <FormItem className="flex flex-col min-h-[3.5rem]">
-                      <FormLabel className="md:h-8">Name of Organization Providing Grant</FormLabel>
+                      <FormLabel className="md:h-8">
+                        Name of Organization Providing Grant
+                      </FormLabel>
                       <FormControl>
                         <Input
                           className="h-[40px] py-2 pl-3 pr-4 border border-input bg-background hover:border-accent hover:text-accent-foreground inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
@@ -186,8 +220,18 @@ function SuggestionForm() {
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
-                            <Button variant={'outline'} className={cn('w-[240px] pl-3 text-left font-normal', !field.value && 'text-muted-foreground')}>
-                              {field.value ? format(field.value, 'PPP') : <span>Pick a date</span>}
+                            <Button
+                              variant={'outline'}
+                              className={cn(
+                                'w-[240px] pl-3 text-left font-normal',
+                                !field.value && 'text-muted-foreground',
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, 'PPP')
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
                           </FormControl>
@@ -218,13 +262,23 @@ function SuggestionForm() {
                         <DropdownMenu>
                           <DropdownMenuTrigger asChild>
                             <Button variant="outline" className="justify-start">
-                              {field.value ? field.value.slice(0, 1).toLocaleUpperCase() + field.value.slice(1) : 'Choose Industry'}
+                              {field.value
+                                ? field.value.slice(0, 1).toLocaleUpperCase() +
+                                  field.value.slice(1)
+                                : 'Choose Industry'}
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent className="w-56">
-                            <DropdownMenuRadioGroup value={field.value ? field.value : 'non-profit'} onValueChange={field.onChange}>
-                              <DropdownMenuRadioItem value="profit">Profit</DropdownMenuRadioItem>
-                              <DropdownMenuRadioItem value="non-profit">Non-Profit</DropdownMenuRadioItem>
+                            <DropdownMenuRadioGroup
+                              value={field.value ? field.value : 'non-profit'}
+                              onValueChange={field.onChange}
+                            >
+                              <DropdownMenuRadioItem value="profit">
+                                Profit
+                              </DropdownMenuRadioItem>
+                              <DropdownMenuRadioItem value="non-profit">
+                                Non-Profit
+                              </DropdownMenuRadioItem>
                             </DropdownMenuRadioGroup>
                           </DropdownMenuContent>
                         </DropdownMenu>
@@ -234,7 +288,7 @@ function SuggestionForm() {
                 />
               </div>
               <div className="w-full flex justify-end">
-                <Button className="flex w-[8rem]" type="submit">
+                <Button className="flex w-[8rem] bg-accent" type="submit">
                   Submit
                 </Button>
               </div>

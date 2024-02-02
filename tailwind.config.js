@@ -1,7 +1,12 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   darkMode: ["class"],
-  content: ["./pages/**/*.{ts,tsx}", "./components/**/*.{ts,tsx}", "./app/**/*.{ts,tsx}", "./src/**/*.{ts,tsx}"],
+  content: [
+    "./pages/**/*.{ts,tsx}",
+    "./components/**/*.{ts,tsx}",
+    "./app/**/*.{ts,tsx}",
+    "./src/**/*.{ts,tsx}",
+  ],
   theme: {
     container: {
       center: true,
@@ -23,20 +28,20 @@ module.exports = {
     // },
     extend: {
       colors: {
-        // border: "#8d5c3e",
-        border: "hsl(var(--border))",
+        border: "#8d5c3e",
+        // border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          // DEFAULT: "#401e15",
+          // DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "#401e15",
           foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          // DEFAULT: "#8d5c3e",
+          // DEFAULT: "hsl(var(--secondary))",
+          DEFAULT: "#8d5c3e",
           foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
@@ -48,8 +53,8 @@ module.exports = {
           foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "hsl(var(--accent))",
-          // DEFAULT: "#fcb040",
+          // DEFAULT: "hsl(var(--accent))",
+          DEFAULT: "#fcb040",
           foreground: "hsl(var(--accent-foreground))",
         },
         popover: {
