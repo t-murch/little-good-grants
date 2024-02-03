@@ -32,7 +32,6 @@ export const columns: ColumnDef<Grant>[] = [
     header: ({ column }) => {
       return (
         <Button
-          className="px-0"
           size={'sm'}
           variant={'ghost'}
           onClick={() => column.toggleSorting(column.getIsSorted() === 'asc')}
@@ -41,6 +40,9 @@ export const columns: ColumnDef<Grant>[] = [
           <ArrowUpDown className="ml-2 h-4 w-4" />
         </Button>
       );
+    },
+    cell: ({ row }) => {
+      return <div className="pl-3">{row.getValue('deadline_date')}</div>;
     },
   },
   {
@@ -81,7 +83,7 @@ export const columns: ColumnDef<Grant>[] = [
         currency: 'USD',
       }).format(amount);
 
-      return <div className="text-center font-medium">{formatted}</div>;
+      return <div className="pl-4 font-medium">{formatted}</div>;
     },
   },
   {

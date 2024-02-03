@@ -60,6 +60,7 @@ async function submitForm(values: z.infer<typeof formSchema>) {}
 function SuggestionForm() {
   // { submissionService }: { submissionService: GrantService }
   const [formSectionOpen, setFormSectionOpen] = useState<boolean>(false);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
   const buttonRef = useRef<HTMLButtonElement>(null);
   const formControlRef = useRef<HTMLButtonElement>(null);
   // const firstFormInputRef = useRef<HTMLInputElement>(null);
@@ -75,6 +76,7 @@ function SuggestionForm() {
   });
 
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
     try {
       const myResponse = await fetch('/api/grants', {
         method: 'POST',
@@ -84,8 +86,10 @@ function SuggestionForm() {
       console.debug('RESPONSE=', JSON.stringify(data));
     } catch (error) {
       console.error('Error on Submit. Error=', JSON.stringify(error));
+    } finally {
+      console.log('SUBMITTED');
+      setIsSubmitting(false);
     }
-    console.log('SUBMITTED');
   }
 
   const openForm = useCallback((): void => {
@@ -120,24 +124,23 @@ function SuggestionForm() {
       }`}
     >
       <section className="group">
-        <div className="bg-secondary">
+        <div className="bg-primary">
           <Button
             tabIndex={0}
             ref={formControlRef}
             className={clsx(
-              'rounded-sm w-full flex flex-row justify-between p-4 bg-secondary text-gray-900 drop-shadow-md select-none' +
-                // "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+              'rounded-sm w-full flex flex-row justify-between p-4 text-gray-50 drop-shadow-md select-none' +
                 { 'group-hover:mb-1': !formSectionOpen },
             )}
             onClick={openForm}
           >
-            <h2 className="font-semibold md:text-3xl">
+            <h2 className="font-semibold md:text-2xl">
               Have a Grant we missed?
             </h2>
             <Image
               alt="form closed icon"
               className={clsx(
-                'transition-transform duration-300 w-[32px] h-[32px]',
+                'transition-transform duration-300 w-[32px] h-[32px] fill-gray-50',
                 {
                   'rotate-180': formSectionOpen,
                   'group-hover:rotate-45': !formSectionOpen,
@@ -149,7 +152,7 @@ function SuggestionForm() {
           </Button>
         </div>
         <section
-          className={`transition-transform duration-700 ease-in-out overflow-hidden bottom-0 ${formSectionOpen ? `h-max p-4 ` : `h-0 group-hover:h-10 group-focus:h-10 px-4 py-0`}`}
+          className={`transition-transform duration-700 ease-in-out overflow-hidden bottom-0 bg-gray-50 ${formSectionOpen ? `h-max p-4 ` : `h-0 group-hover:h-10 group-focus:h-10 px-4 py-0`}`}
         >
           <p className="px-1 pb-4">
             Please, drop us the link and any other details you have to have
@@ -236,17 +239,18 @@ function SuggestionForm() {
                             </Button>
                           </FormControl>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
+                        <PopoverContent
+                          className="bg-gray-50 rounded-md border border-primary w-auto p-0"
+                          align="start"
+                        >
                           <Calendar
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
-                            // disabled={(date) => date > new Date() || date < new Date("1900-01-01")}
                             initialFocus
                           />
                         </PopoverContent>
                       </Popover>
-                      {/* <FormDescription>Your date of birth is used to calculate your age.</FormDescription> */}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -288,7 +292,11 @@ function SuggestionForm() {
                 />
               </div>
               <div className="w-full flex justify-end">
-                <Button className="flex w-[8rem] bg-accent" type="submit">
+                <Button
+                  className="flex w-[8rem] bg-accent"
+                  disabled={isSubmitting}
+                  type="submit"
+                >
                   Submit
                 </Button>
               </div>

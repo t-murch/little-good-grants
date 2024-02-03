@@ -102,17 +102,14 @@ export function DataTable<TData, TValue>({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border">
+      <div className="rounded-md border border-black overflow-hidden ">
         <Table>
-          <TableHeader className="sticky top-0 bg-secondary">
+          <TableHeader className="sticky top-0 bg-primary hover:bg-primary">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {
                   return (
-                    <TableHead
-                      className="text-xs text-gray-900"
-                      key={header.id}
-                    >
+                    <TableHead className="text-xs text-gray-50" key={header.id}>
                       {header.isPlaceholder
                         ? null
                         : flexRender(
@@ -125,7 +122,7 @@ export function DataTable<TData, TValue>({
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className="bg-gray-50">
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map((row) => (
                 <TableRow

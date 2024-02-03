@@ -10,10 +10,10 @@ export default async function Page() {
   tableData.push(...testData);
 
   return (
-    <main className="flex min-h-screen w-screen flex-col items-center justify-between">
-      <div className="w-full px-8 md:px-20 py-4 space-y-4">
-        <HeaderNav />
-        <article className="flex flex-col grow space-y-4 w-full h-auto">
+    <main className="bg-secondary flex min-h-screen w-screen flex-col items-center justify-between">
+      <div className="w-full px-8 md:px-20 py-4">
+        <div className="flex flex-col space-y-4">
+          <HeaderNav />
           <p>
             Integer nunc diam, hendrerit sed nibh ut, congue pretium tellus.
             Aenean nec enim in purus porta hendrerit sit amet sit amet purus.
@@ -25,6 +25,8 @@ export default async function Page() {
             vestibulum. Maecenas a est ut mauris volutpat semper in nec ex.
             Mauris interdum mi nec tortor accumsan euismod.{' '}
           </p>
+        </div>
+        <article className="flex flex-col grow space-y-4 w-full h-auto">
           <DataTable columns={columns} data={tableData} />
           <SuggestionForm />
         </article>
