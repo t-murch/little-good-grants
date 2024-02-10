@@ -104,7 +104,7 @@ export function DataTable<TData, TValue>({
       </div>
       <div className="rounded-md border border-black overflow-hidden ">
         <Table>
-          <TableHeader className="sticky top-0 bg-primary hover:bg-primary">
+          <TableHeader className="sticky top-0 bg-stone-950 hover:bg-stone-950">
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
                 {headerGroup.headers.map((header) => {

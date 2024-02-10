@@ -42,7 +42,15 @@ export const columns: ColumnDef<Grant>[] = [
       );
     },
     cell: ({ row }) => {
-      return <div className="pl-3">{row.getValue('deadline_date')}</div>;
+      const date = new Date(row.getValue('deadline_date'));
+
+      if (isNaN(date.getDate())) {
+        return <div className="pl-3">{row.getValue('deadline_date')}</div>;
+      }
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const year = date.getFullYear();
+      return <div className="pl-3">{`${month}-${day}-${year}`}</div>;
     },
   },
   {
@@ -77,11 +85,16 @@ export const columns: ColumnDef<Grant>[] = [
       );
     },
     cell: ({ row }) => {
-      const amount = parseFloat(row.getValue('amount'));
+      const amount = row.getValue('amount');
+      if (typeof amount === 'string' && amount.length > 0) {
+        return <div className="pl-4 font-medium">{amount}</div>;
+      }
       const formatted = new Intl.NumberFormat('en-US', {
         style: 'currency',
         currency: 'USD',
-      }).format(amount);
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
+      }).format(Number(amount));
 
       return <div className="pl-4 font-medium">{formatted}</div>;
     },

@@ -10,7 +10,7 @@ type BaseGrant = {
 };
 
 type Grant = {
-  amount: number | null;
+  amount: number | string | null;
   approved?: boolean;
   date_added: string;
   description?: string;
@@ -33,10 +33,20 @@ interface GrantDAO {
   url: string;
 }
 
+const parseAmount = (
+  amount: string | number | null,
+): number | string | null => {
+  if (amount === null) return amount;
+  if (typeof amount === 'string' && amount.startsWith('$')) {
+    return Math.trunc(Number(amount.slice(1).split(',').join('')));
+  } else if (typeof amount === 'string') return amount;
+  return amount;
+};
 export const grantDAOtoGrant = (grantDAOs: GrantDAO[]) => {
   return grantDAOs.map((grantDAO) => {
+    // const parsedAmount = typeof grantDAO.amount === 'string' && gran
     const myGrant: Grant = {
-      amount: grantDAO.amount,
+      amount: parseAmount(grantDAO.amount),
       approved: false,
       date_added: grantDAO.date_added,
       deadline_date: grantDAO.deadline_date,

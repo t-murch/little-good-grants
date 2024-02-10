@@ -1,9 +1,21 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip';
 import { zodResolver } from '@hookform/resolvers/zod';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -12,7 +24,8 @@ import isStrongPassword from 'validator/es/lib/isStrongPassword';
 import { z } from 'zod';
 import TooltipIcon from '/public/TooltipIcon.svg';
 
-const PASSWORD_VALIDATION = 'Password must be 8-12 alphanumeric-characters, with atleast one uppercase character and symbol. ';
+const PASSWORD_VALIDATION =
+  'Password must be 8-12 alphanumeric-characters, with atleast one uppercase character and symbol. ';
 const signUpSchema = z
   .object({
     email: z.string().email(),
@@ -65,12 +78,15 @@ function SignUp() {
         console.log('*** ADVISE USER OF ERROR SOMEHOW. ***');
       }
     } catch (error) {
-      console.error('Error on New Account Sign Up. Error=', JSON.stringify(error));
+      console.error(
+        'Error on New Account Sign Up. Error=',
+        JSON.stringify(error),
+      );
     }
   }
 
   return (
-    <section className="flex h-auto min-w-[21rem] rounded-md border-6 bg-purple-400 p-4 shadow-2xl">
+    <section className="flex h-auto min-w-[21rem] rounded-md border-6 bg-gray-50 p-4 shadow-2xl shadow-gray-50/50">
       <Form {...form}>
         <form
           className="flex flex-col gap-4"
@@ -85,7 +101,12 @@ function SignUp() {
                 <FormLabel>Email</FormLabel>
                 <div className="flex flex-col gap-1">
                   <FormControl>
-                    <Input type="email" placeholder="admin@goodgrants.com" className="h-7 max-w-[13rem] rounded-sm px-1" {...field} />
+                    <Input
+                      type="email"
+                      placeholder="admin@goodgrants.com"
+                      className="h-7 max-w-[13rem] rounded-sm px-1"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage className="text-xs self-end" />
                 </div>
@@ -102,16 +123,28 @@ function SignUp() {
                 <TooltipProvider>
                   <Tooltip>
                     <TooltipTrigger>
-                      <Image className="flex flex-col h-[16px] w-[16px]" src={TooltipIcon} alt="More Info Icon" priority />
+                      <Image
+                        className="flex flex-col h-[16px] w-[16px]"
+                        src={TooltipIcon}
+                        alt="More Info Icon"
+                        priority
+                      />
                     </TooltipTrigger>
                     <TooltipContent>
-                      <p className="max-w-xs md:max-w-md">{PASSWORD_VALIDATION}</p>
+                      <p className="max-w-xs md:max-w-md">
+                        {PASSWORD_VALIDATION}
+                      </p>
                     </TooltipContent>
                   </Tooltip>
                 </TooltipProvider>
                 <div className="flex flex-col gap-1">
                   <FormControl>
-                    <Input placeholder="password" type="password" className="h-7 max-w-[13rem] rounded-sm px-1 self-end" {...field} />
+                    <Input
+                      placeholder="password"
+                      type="password"
+                      className="h-7 max-w-[13rem] rounded-sm px-1 self-end"
+                      {...field}
+                    />
                   </FormControl>
                 </div>
               </FormItem>
@@ -126,7 +159,12 @@ function SignUp() {
                 <FormLabel>Confirm</FormLabel>
                 <div className="flex flex-col gap-1">
                   <FormControl>
-                    <Input placeholder="password" type="password" className="h-7 max-w-[13rem] rounded-sm px-1 self-end" {...field} />
+                    <Input
+                      placeholder="password"
+                      type="password"
+                      className="h-7 max-w-[13rem] rounded-sm px-1 self-end"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage className="text-xs self-end" />
                 </div>

@@ -2,7 +2,7 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-const tableFont = 'text-[.5rem]/3 md:text-[.75rem]/3';
+const tableFont = 'text-[.5rem]/4 md:text-[.75rem]/4';
 
 const Table = React.forwardRef<
   HTMLTableElement,

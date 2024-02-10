@@ -117,20 +117,15 @@ function SuggestionForm() {
 
   return (
     <article
-      className={`rounded-md justify-between mb-2 md:flex-col md:space-x-0 md:space-y-0 border-2 border-solid transition-all overflow-hidden ${
-        formSectionOpen
-          ? 'duration-700 ease-linear'
-          : 'duration-300 ease-linear'
-      }`}
+      className={`rounded-md justify-between mb-2 md:flex-col md:space-x-0 md:space-y-0 border-2 border-solid transition-all overflow-hidden duration-700 ease-linear hover:shadow-2xl shadow-gray-50/50`}
     >
-      <section className="group">
-        <div className="bg-primary">
+      <section className="">
+        <div className="">
           <Button
             tabIndex={0}
             ref={formControlRef}
             className={clsx(
-              'rounded-sm w-full flex flex-row justify-between p-4 text-gray-50 drop-shadow-md select-none' +
-                { 'group-hover:mb-1': !formSectionOpen },
+              'bg-stone-950 hover:bg-stone-950 rounded-sm w-full flex flex-row justify-between pl-4 text-gray-50 select-none shadow-xl shadow-purple-950/50',
             )}
             onClick={openForm}
           >
@@ -143,7 +138,6 @@ function SuggestionForm() {
                 'transition-transform duration-300 w-[32px] h-[32px] fill-gray-50',
                 {
                   'rotate-180': formSectionOpen,
-                  'group-hover:rotate-45': !formSectionOpen,
                 },
               )}
               priority
@@ -152,7 +146,7 @@ function SuggestionForm() {
           </Button>
         </div>
         <section
-          className={`transition-transform duration-700 ease-in-out overflow-hidden bottom-0 bg-gray-50 ${formSectionOpen ? `h-max p-4 ` : `h-0 group-hover:h-10 group-focus:h-10 px-4 py-0`}`}
+          className={`transition-transform duration-700 ease-in-out overflow-hidden bottom-0 bg-gray-50 ${formSectionOpen ? `h-max p-4 ` : `h-0`}`}
         >
           <p className="px-1 pb-4">
             Please, drop us the link and any other details you have to have
@@ -168,7 +162,7 @@ function SuggestionForm() {
                   control={form.control}
                   name="name"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col min-h-[3.5rem] pl-1 mb-1">
+                    <FormItem className="flex flex-col min-h-[3.5rem] px-2">
                       <FormLabel className="md:h-8">Name of Grant</FormLabel>
                       <FormControl>
                         <Input
@@ -184,7 +178,7 @@ function SuggestionForm() {
                   control={form.control}
                   name="organization_name"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col min-h-[3.5rem]">
+                    <FormItem className="flex flex-col min-h-[3.5rem] px-2">
                       <FormLabel className="md:h-8">
                         Name of Organization Providing Grant
                       </FormLabel>
@@ -202,7 +196,7 @@ function SuggestionForm() {
                   control={form.control}
                   name="url"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col min-h-[3.5rem]">
+                    <FormItem className="flex flex-col min-h-[3.5rem]  px-2">
                       <FormLabel className="md:h-8">URL for Grant</FormLabel>
                       <FormControl>
                         <Input
@@ -218,7 +212,7 @@ function SuggestionForm() {
                   control={form.control}
                   name="deadline_date"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col min-h-[3.5rem]">
+                    <FormItem className="flex flex-col min-h-[3.5rem] px-2">
                       <FormLabel className="md:h-8">Deadline</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
@@ -226,7 +220,7 @@ function SuggestionForm() {
                             <Button
                               variant={'outline'}
                               className={cn(
-                                'w-[240px] pl-3 text-left font-normal',
+                                'pl-3 text-left font-normal',
                                 !field.value && 'text-muted-foreground',
                               )}
                             >
@@ -260,7 +254,7 @@ function SuggestionForm() {
                   control={form.control}
                   name="industries_served"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col min-h-[3.5rem] pr-1">
+                    <FormItem className="flex flex-col min-h-[3.5rem] px-2 mb-2">
                       <FormLabel className="md:h-8">Industry Served</FormLabel>
                       <FormControl>
                         <DropdownMenu>
