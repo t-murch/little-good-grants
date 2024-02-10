@@ -1,14 +1,14 @@
 import { SSTConfig } from "sst";
-import { API } from "./stacks/MyStack";
+import { FrontendStack } from "./stacks/FrontendStack";
 
 export default {
   config(_input) {
     return {
       name: "little-good-grants",
-      region: "us-east-1",
+      region: "us-east-2",
     };
   },
   stacks(app) {
-    app.stack(API);
-  }
+    app.stack(FrontendStack);
+  },
 } satisfies SSTConfig;
