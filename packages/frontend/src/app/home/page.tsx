@@ -1,3 +1,4 @@
+import { Grant } from '../../../../core/src/types/grants';
 import { columns } from '@/app/grants/columns';
 import { DataTable } from '@/app/grants/data-table';
 import { HeaderNav } from '@/app/ui/home/headernav';
@@ -5,8 +6,8 @@ import { SuggestionForm } from '@/app/ui/home/suggestionForm';
 
 export default async function Page() {
   const tableData: Grant[] = [];
-  const testData = await getTableData();
-  tableData.push(...testData);
+  // const testData = await getTableData();
+  // tableData.push(...testData);
 
   return (
     <main className="bg-secondary flex min-h-screen w-screen flex-col items-center justify-between">

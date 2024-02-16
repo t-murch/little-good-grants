@@ -1,9 +1,8 @@
-import { Submission } from "@little-good-grants/core/submission";
 import handler from "@little-good-grants/core/handler";
+import { GrantService } from "@little-good-grants/core/grant";
 import { Grant, SparseGrant } from "@little-good-grants/core/types/grants";
 
-// create a submission
-export const create = handler(async (event) => {
+export const createSubmission = handler(async (event) => {
   if (event.body === null) {
     throw new Error("No body found");
   }
@@ -13,24 +12,21 @@ export const create = handler(async (event) => {
     throw new Error("Invalid body");
   }
 
-  return await Submission.create(parseResult.data);
+  return await GrantService.create(parseResult.data, false);
 });
 
-// Retreive all unapproved grants with future deadlines
-// or varying and ongoing deadlines
-export const list = handler(async (_event) => {
-  return JSON.stringify(await Submission.listFutureDefined());
+export const list = handler(async (event) => {
+  const approved = event.pathParameters?.approved === "true";
+  return JSON.stringify(await GrantService.listFutureDefined(approved));
 });
 
-// Get a single submission by id
 export const get = handler(async (event) => {
   const id = event.pathParameters?.id;
   if (!id) {
     throw new Error("No id found");
   }
-  console.log("id", id);
 
-  const result = await Submission.get(id);
+  const result = await GrantService.get(id);
   if (!result.success) {
     throw new Error(result.error);
   }
@@ -38,7 +34,7 @@ export const get = handler(async (event) => {
   return JSON.stringify(result.data);
 });
 
-// update a submission by id
+// update a grant by id
 export const update = handler(async (event) => {
   const id = event.pathParameters?.id;
   if (!id) {
@@ -48,7 +44,7 @@ export const update = handler(async (event) => {
     throw new Error("No body found");
   }
 
-  const result = await Submission.get(id);
+  const result = await GrantService.get(id);
   if (!result.success) {
     throw new Error(result.error);
   }
@@ -58,9 +54,9 @@ export const update = handler(async (event) => {
     throw new Error("Invalid body");
   }
 
-  await Submission.update(id, parsedUserGrant.data as Partial<Grant>);
+  await GrantService.update(id, parsedUserGrant.data as Partial<Grant>);
 
-  return "Submission updated";
+  return "Updated submission with id: " + id;
 });
 
 // delete a submission by id
@@ -70,7 +66,7 @@ export const remove = handler(async (event) => {
     throw new Error("No id found");
   }
 
-  await Submission.remove(id);
+  await GrantService.remove(id);
 
   return "Deleted submission with id: " + id;
 });

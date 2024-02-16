@@ -7,8 +7,9 @@ import {
   ExpressionAttributeValueMap,
 } from "aws-sdk/clients/dynamodb";
 
-export async function create(sparseGrant: SparseGrant) {
+export async function create(sparseGrant: SparseGrant, approved: boolean) {
   const fullGrant = hydrateGrant(sparseGrant);
+  fullGrant.approved = approved ? "yes" : "no";
 
   const params = {
     TableName: Table.Grants.tableName,
@@ -24,7 +25,7 @@ export async function create(sparseGrant: SparseGrant) {
 // with future or varying deadlines
 // unapproved grants = submissions
 // approved grants = listings
-export async function listFutureDefined() {
+export async function listFutureDefined(approved: boolean) {
   const params = {
     TableName: Table.Grants.tableName,
     IndexName: "approvedDeadlineIndex",
@@ -35,7 +36,7 @@ export async function listFutureDefined() {
       "#deadline_date": "deadline_date",
     },
     ExpressionAttributeValues: {
-      ":approved": "no",
+      ":approved": approved ? "yes" : "no",
       ":today": new Date().toISOString(),
     },
   };
@@ -48,7 +49,7 @@ export async function listFutureDefined() {
 
 // Retrieve all UN-approved grants
 // with ongoing or varying deadlines
-export async function listOngoing() {
+export async function listOngoing(approved: boolean) {
   const params = {
     TableName: Table.Grants.tableName,
     IndexName: "approvedDeadlineIndex",
@@ -61,7 +62,7 @@ export async function listOngoing() {
       "#deadline_type": "deadline_type",
     },
     ExpressionAttributeValues: {
-      ":approved": "no",
+      ":approved": approved ? "yes" : "no",
       ":undefinedDate": "UNDEFINED_DATE",
       ":ongoing": "ongoing",
       ":varying": "varying",
@@ -196,4 +197,4 @@ export async function deleteAnyYearSubmission(
   return "Success";
 }
 
-export * as Submission from "./submission";
+export * as GrantService from "./grant";

@@ -10,17 +10,12 @@ export function API({ stack }: StackContext) {
       },
     },
     routes: {
-      "GET /listing/{id}": "packages/functions/src/listing.get",
-      "GET /listings": "packages/functions/src/listing.list",
-      "POST /listing": "packages/functions/src/listing.create",
-      "PUT /listing/{id}": "packages/functions/src/listing.update",
-      "DELETE /listing/{id}": "packages/functions/src/listing.delete",
+      "GET /grants/{approved}": "packages/functions/src/grant.list",
+      "POST /submission": "packages/functions/src/grant.createSubmission",
 
-      "GET /submission/{id}": "packages/functions/src/submission.get",
-      "GET /submissions": "packages/functions/src/submission.list",
-      "POST /submission": "packages/functions/src/submission.create",
-      "PUT /submission/{id}": "packages/functions/src/submission.update",
-      "DELETE /submission/{id}": "packages/functions/src/submission.remove",
+      "GET /grant/{id}": "packages/functions/src/grant.get",
+      "PUT /grant/{id}": "packages/functions/src/grant.update",
+      "DELETE /grant/{id}": "packages/functions/src/grant.remove",
     },
   });
 
