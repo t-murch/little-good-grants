@@ -1,6 +1,5 @@
 import { columns } from '@/app/grants/columns';
 import { DataTable } from '@/app/grants/data-table';
-import { Grant, getTableData } from '@/app/types/grants';
 import { HeaderNav } from '@/app/ui/home/headernav';
 import { SuggestionForm } from '@/app/ui/home/suggestionForm';
 

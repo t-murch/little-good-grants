@@ -13,14 +13,13 @@ export const create = handler(async (event) => {
     throw new Error("Invalid body");
   }
 
-  await Submission.create(parseResult.data);
-
-  return "Submission created";
+  return await Submission.create(parseResult.data);
 });
 
-// Retreive all submissions
+// Retreive all unapproved grants with future deadlines
+// or varying and ongoing deadlines
 export const list = handler(async (_event) => {
-  return JSON.stringify(await Submission.list());
+  return JSON.stringify(await Submission.listFutureDefined());
 });
 
 // Get a single submission by id
@@ -29,6 +28,7 @@ export const get = handler(async (event) => {
   if (!id) {
     throw new Error("No id found");
   }
+  console.log("id", id);
 
   const result = await Submission.get(id);
   if (!result.success) {
@@ -53,17 +53,24 @@ export const update = handler(async (event) => {
     throw new Error(result.error);
   }
 
-  const parsedUserGrant = Grant.safeParse(JSON.parse(event.body));
+  const parsedUserGrant = Grant.partial().safeParse(JSON.parse(event.body));
   if (!parsedUserGrant.success) {
     throw new Error("Invalid body");
   }
 
-  const updatedGrant = {
-    ...result.data,
-    ...parsedUserGrant.data,
-  };
-
-  await Submission.update(id, updatedGrant);
+  await Submission.update(id, parsedUserGrant.data as Partial<Grant>);
 
   return "Submission updated";
+});
+
+// delete a submission by id
+export const remove = handler(async (event) => {
+  const id = event.pathParameters?.id;
+  if (!id) {
+    throw new Error("No id found");
+  }
+
+  await Submission.remove(id);
+
+  return "Deleted submission with id: " + id;
 });

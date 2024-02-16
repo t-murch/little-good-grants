@@ -10,15 +10,17 @@ export function API({ stack }: StackContext) {
       },
     },
     routes: {
-      "GET /listings": "packages/functions/src/listings.list",
-      "POST /listings": "packages/functions/src/listings.create",
-      "PUT /listings/:id": "packages/functions/src/listings.update",
-      "DELETE /listings/:id": "packages/functions/src/listings.delete",
+      "GET /listing/{id}": "packages/functions/src/listing.get",
+      "GET /listings": "packages/functions/src/listing.list",
+      "POST /listing": "packages/functions/src/listing.create",
+      "PUT /listing/{id}": "packages/functions/src/listing.update",
+      "DELETE /listing/{id}": "packages/functions/src/listing.delete",
 
-      "GET /submissions": "packages/functions/src/submissions.list",
-      "POST /submissions": "packages/functions/src/submissions.create",
-      "PUT /submissions/:id": "packages/functions/src/submissions.update",
-      "DELETE /submissions/:id": "packages/functions/src/submissions.delete",
+      "GET /submission/{id}": "packages/functions/src/submission.get",
+      "GET /submissions": "packages/functions/src/submission.list",
+      "POST /submission": "packages/functions/src/submission.create",
+      "PUT /submission/{id}": "packages/functions/src/submission.update",
+      "DELETE /submission/{id}": "packages/functions/src/submission.remove",
     },
   });
 
