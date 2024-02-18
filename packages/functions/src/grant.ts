@@ -15,6 +15,10 @@ export const createSubmission = handler(async (event) => {
   return await GrantService.create(parseResult.data, false);
 });
 
+export const listings = handler(async (_event) => {
+  return JSON.stringify(await GrantService.listFutureDefined(true));
+});
+
 export const list = handler(async (event) => {
   const approved = event.pathParameters?.approved === "true";
   return JSON.stringify(await GrantService.listFutureDefined(approved));
