@@ -1,5 +1,6 @@
 'use client';
 
+import { useAppContext } from '@/app/lib/contextLib';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -10,8 +11,9 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { signIn } from 'aws-amplify/auth';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 
@@ -23,6 +25,7 @@ const loginSchema = z.object({
 const loginItemClass = 'flex h-9 min-w-[18rem] items-baseline justify-between';
 
 function Login() {
+  const { isAuthenticated, userHasAuthenticated } = useAppContext();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const router = useRouter();
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -33,27 +36,29 @@ function Login() {
     },
   });
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      console.log('isAuthenticated=', isAuthenticated);
+      router.push('/admin');
+    }
+  }, [isAuthenticated, router]);
+
   async function onSubmit(values: z.infer<typeof loginSchema>) {
     setIsSubmitting(true);
-    let data,
-      error = null;
+
     try {
-      const myResponse = await fetch('/api/users/login', {
-        method: 'POST',
-        body: JSON.stringify(values),
-      });
-      const returnData = await myResponse.json();
-      data = returnData.data;
-      error = returnData.error;
-      console.debug('RESPONSE=', JSON.stringify({ data, error }));
-      if (error === null) {
-        console.log('Redirect should be occurring. ');
-        router.push('/home/admin');
-        // redirect('/home/admin');
-      } else {
-        console.log('*** ADVISE USER OF ERROR SOMEHOW. ***');
-      }
+      await signIn({ username: values.email, password: values.password });
+      userHasAuthenticated(true);
+
+      console.log('Logged in');
+      router.push('/admin');
     } catch (error) {
+      console.error(error);
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert(String(error));
+      }
       console.error('Error on User Login. Error=', JSON.stringify(error));
       setIsSubmitting(false);
     } finally {
@@ -73,6 +78,7 @@ function Login() {
                 <FormLabel>Email</FormLabel>
                 <FormControl>
                   <Input
+                    autoFocus
                     type="email"
                     placeholder="admin@goodgrants.com"
                     className="h-7 max-w-[13rem] rounded-sm px-1"
@@ -102,7 +108,7 @@ function Login() {
           />
 
           <div className="flex w-full mt-2 justify-between items-center">
-            <a className="text-sm font-semibold" href="/home/signup">
+            <a className="text-sm font-semibold" href="/signup">
               Create Account
             </a>
             <Button disabled={isSubmitting} type="submit">

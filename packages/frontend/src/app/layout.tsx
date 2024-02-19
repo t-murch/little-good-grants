@@ -1,4 +1,6 @@
 import '@/app/globals.css';
+import { Providers } from '@/app/providers';
+import AmplifyConfig from '@/app/ui/AmplifyConfig';
 import { inter } from '@/app/ui/fonts';
 
 export default function RootLayout({
@@ -8,7 +10,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${inter.className}`}>{children}</body>
+      <body className={`${inter.className}`}>
+        <AmplifyConfig />
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }

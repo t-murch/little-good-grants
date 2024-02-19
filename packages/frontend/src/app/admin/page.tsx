@@ -1,11 +1,7 @@
-import {
-  getAllApprovedGrants,
-  getUnapprovedSubmissions,
-} from '@/app/actions/grants';
-import { createClient } from '@/app/actions/supabase';
+'use client';
+
 import { adminColumns } from '@/app/grants/columns';
 import { DataTable } from '@/app/grants/data-table';
-import { grantDAOtoGrant } from '@/app/types/grants';
 import { Logout } from '@/app/ui/admin/Logout';
 import {
   Accordion,
@@ -13,15 +9,10 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
-import { cookies } from 'next/headers';
 
-export default async function Page() {
-  const cookieStore = cookies();
-  const supabaseClient = createClient(cookieStore);
-  const allListings = (await getAllApprovedGrants(() => supabaseClient)) ?? [];
-  const allSubmissions =
-    (await getUnapprovedSubmissions(() => supabaseClient)) ?? [];
-  console.log('Grant Rows Count = ', allSubmissions?.length);
+export default function Page() {
+  const allSubmissions: string | any[] = [];
+  const allListings: string | any[] = [];
 
   return (
     <main className="bg-secondary flex p-24 min-h-screen w-screen flex-col items-center justify-between bg-back">
@@ -41,10 +32,7 @@ export default async function Page() {
               <AccordionContent className="px-4">
                 <>
                   Rows of Submissions
-                  <DataTable
-                    columns={adminColumns}
-                    data={grantDAOtoGrant(allSubmissions)}
-                  />
+                  <DataTable columns={adminColumns} data={allSubmissions} />
                 </>
               </AccordionContent>
             </AccordionItem>
@@ -57,10 +45,7 @@ export default async function Page() {
               <AccordionContent className="px-4">
                 <>
                   Rows of Active Listings
-                  <DataTable
-                    columns={adminColumns}
-                    data={grantDAOtoGrant(allListings)}
-                  />
+                  <DataTable columns={adminColumns} data={allListings} />
                 </>
               </AccordionContent>
             </AccordionItem>

@@ -23,6 +23,9 @@ import { useForm } from 'react-hook-form';
 import isStrongPassword from 'validator/es/lib/isStrongPassword';
 import { z } from 'zod';
 import TooltipIcon from '/public/TooltipIcon.svg';
+import { confirmSignUp, signIn, signUp } from 'aws-amplify/auth';
+import { useState } from 'react';
+import { useAppContext } from '@/app/lib/contextLib';
 
 const PASSWORD_VALIDATION =
   'Password must be 8-12 alphanumeric-characters, with atleast one uppercase character and symbol. ';
@@ -31,6 +34,7 @@ const signUpSchema = z
     email: z.string().email(),
     password: z.string().min(8, { message: PASSWORD_VALIDATION }).max(16),
     confirmPassword: z.string().min(8).max(16),
+    confirmationCode: z.string(),
   })
   .superRefine(({ confirmPassword, password }, ctx) => {
     if (confirmPassword !== password) {
@@ -52,41 +56,89 @@ const signUpSchema = z
 const loginItemClass = 'flex h-9 min-w-[19rem] items-baseline justify-between';
 
 function SignUp() {
+  const { userHasAuthenticated } = useAppContext();
   const router = useRouter();
+  const [newUser, setNewUser] = useState<null | string>(null);
   const form = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
     defaultValues: {
       email: '',
       password: '',
       confirmPassword: '',
+      confirmationCode: '',
     },
   });
 
   async function onSubmit(values: z.infer<typeof signUpSchema>) {
     try {
-      const myResponse = await fetch('/api/users/new', {
-        method: 'POST',
-        body: JSON.stringify(values),
+      const newUser = await signUp({
+        username: values.email,
+        password: values.password,
       });
-      const data = await myResponse.json();
-      console.debug('RESPONSE=', JSON.stringify(data));
-      if (data?.error === null) {
-        console.log('Redirect should be occurring. ');
-        router.push('/home/login');
-        // redirect('/home/login');
-      } else {
-        console.log('*** ADVISE USER OF ERROR SOMEHOW. ***');
+      if (!newUser.userId) {
+        throw new Error('No new user was created.');
       }
-    } catch (error) {
-      console.error(
-        'Error on New Account Sign Up. Error=',
-        JSON.stringify(error),
-      );
+      setNewUser(newUser.userId);
+    } catch (error: any) {
+      let message = String(error);
+
+      if (!(error instanceof Error) && error.message) {
+        message = String(error.message);
+        console.error('Error Message=', message);
+      }
     }
   }
 
-  return (
-    <section className="flex h-auto min-w-[21rem] rounded-md border-6 bg-gray-50 p-4 shadow-2xl shadow-gray-50/50">
+  async function onConfirmation(values: z.infer<typeof signUpSchema>) {
+    try {
+      await confirmSignUp({
+        username: values.email,
+        confirmationCode: values.confirmationCode,
+      });
+      await signIn({ username: values.email, password: values.password });
+      userHasAuthenticated(true);
+
+      console.log('Redirect should be occurring. ');
+      router.push('/login');
+    } catch (error: any) {
+      let message = String(error);
+
+      if (!(error instanceof Error) && error.message) {
+        message = String(error.message);
+        console.error('Error Message=', message);
+      }
+    }
+  }
+
+  function renderConfirmationForm() {
+    return (
+      <Form {...form}>
+        <form onSubmit={form.handleSubmit(onConfirmation)}>
+          <FormField
+            control={form.control}
+            name="confirmationCode"
+            render={({ field }) => (
+              <FormItem className={loginItemClass}>
+                <FormLabel>Confirmation Code</FormLabel>
+                <div className="flex flex-col gap-1">
+                  <FormControl>
+                    <Input
+                      placeholder="123456"
+                      className="h-7 max-w-[13rem] rounded-sm px-1 self-end"
+                      {...field}
+                    />
+                  </FormControl>
+                </div>
+              </FormItem>
+            )}
+          />
+        </form>
+      </Form>
+    );
+  }
+
+  function renderSignUpForm() {
+    return (
       <Form {...form}>
         <form
           className="flex flex-col gap-4"
@@ -176,6 +228,12 @@ function SignUp() {
           </div>
         </form>
       </Form>
+    );
+  }
+
+  return (
+    <section className="flex h-auto min-w-[21rem] rounded-md border-6 bg-gray-50 p-4 shadow-2xl shadow-gray-50/50">
+      {newUser === null ? renderSignUpForm() : renderConfirmationForm()}
     </section>
   );
 }
