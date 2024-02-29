@@ -18,10 +18,11 @@ export function API({ stack }: StackContext) {
     },
     routes: {
       "GET /grants/listings": "packages/functions/src/grant.listings",
-      "POST /submission": "packages/functions/src/grant.createSubmission",
+      "POST /grant/submission": "packages/functions/src/grant.createSubmission",
 
       "GET /grants/{approved}": addAuth("packages/functions/src/grant.list"),
       "GET /grant/{id}": addAuth("packages/functions/src/grant.get"),
+      // "PUT /grant/{id}": "packages/functions/src/grant.update",
       "PUT /grant/{id}": addAuth("packages/functions/src/grant.update"),
       "DELETE /grant/{id}": addAuth("packages/functions/src/grant.remove"),
     },

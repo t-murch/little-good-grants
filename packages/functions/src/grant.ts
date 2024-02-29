@@ -1,15 +1,36 @@
-import handler from "@little-good-grants/core/handler";
 import { GrantService } from "@little-good-grants/core/grant";
-import { Grant, SparseGrant } from "@little-good-grants/core/types/grants";
+import handler from "@little-good-grants/core/handler";
+import { FormGrant, Grant } from "@little-good-grants/core/types/grants";
+
+// handle zod parse errors
+const handleZodErrors = (errors: any[]) => {
+  return errors.map((e) => JSON.stringify(e) || "Invalid Issue").join(", ");
+};
 
 export const createSubmission = handler(async (event) => {
+  let parseMe: FormGrant;
   if (event.body === null) {
     throw new Error("No body found");
   }
 
-  const parseResult = SparseGrant.safeParse(JSON.parse(event.body));
+  try {
+    parseMe = await JSON.parse(event.body);
+  } catch (error) {
+    console.error("Error parsing JSON", error);
+    throw new Error(
+      `Error parsing JSON: ${String(error)}` || "Error parsing JSON",
+    );
+  }
+  const parseResult = FormGrant.safeParse(parseMe);
   if (!parseResult.success) {
-    throw new Error("Invalid body");
+    console.error("typeof parseMe: ", typeof parseMe);
+    console.error("parseMe: ", parseMe);
+    console.error(`Zod Parsing Error: ${parseResult.error})`);
+    throw new Error(
+      parseResult.error.issues
+        ?.map((i) => JSON.stringify(i) || "Invalid Issue")
+        .join(", ") || "Invalid Body",
+    );
   }
 
   return await GrantService.create(parseResult.data, false);
@@ -47,20 +68,22 @@ export const update = handler(async (event) => {
   if (event.body === null) {
     throw new Error("No body found");
   }
+  const data = JSON.parse(event.body || "{}");
 
-  const result = await GrantService.get(id);
-  if (!result.success) {
-    throw new Error(result.error);
-  }
-
-  const parsedUserGrant = Grant.partial().safeParse(JSON.parse(event.body));
+  console.log("\n data=", data, "\n");
+  const parsedUserGrant = Grant.partial().safeParse(data?.grant);
   if (!parsedUserGrant.success) {
     throw new Error("Invalid body");
   }
+  console.log("\n parsedUserGrant=", parsedUserGrant, "\n");
 
-  await GrantService.update(id, parsedUserGrant.data as Partial<Grant>);
+  const response = await GrantService.update(
+    id,
+    parsedUserGrant.data as Partial<Grant>,
+  );
+  console.log("\n response=", response, "\n");
 
-  return "Updated submission with id: " + id;
+  return JSON.stringify(getStatus(true, `Updated submission with id: ${id}`));
 });
 
 // delete a submission by id
@@ -72,5 +95,9 @@ export const remove = handler(async (event) => {
 
   await GrantService.remove(id);
 
-  return "Deleted submission with id: " + id;
+  return JSON.stringify(getStatus(true, `Deleted submission with id: ${id}`));
 });
+
+function getStatus(success: boolean, message: string) {
+  return { success, message };
+}

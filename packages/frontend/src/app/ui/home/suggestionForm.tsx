@@ -25,6 +25,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@radix-ui/react-popover';
+import { post } from 'aws-amplify/api';
 import clsx from 'clsx';
 import { format } from 'date-fns';
 import { CalendarIcon } from 'lucide-react';
@@ -75,7 +76,7 @@ function SuggestionForm() {
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit2(values: z.infer<typeof formSchema>) {
     setIsSubmitting(true);
     try {
       const myResponse = await fetch('/api/grants', {
@@ -84,6 +85,28 @@ function SuggestionForm() {
       });
       const data = await myResponse.json();
       console.debug('RESPONSE=', JSON.stringify(data));
+    } catch (error) {
+      console.error('Error on Submit. Error=', JSON.stringify(error));
+    } finally {
+      console.log('SUBMITTED');
+      setIsSubmitting(false);
+    }
+  }
+
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setIsSubmitting(true);
+    try {
+      const { body } = await post({
+        apiName: 'grants',
+        path: '/grant/submission',
+        options: {
+          body: values as any,
+        },
+      }).response;
+
+      console.log('RESPONSE=', JSON.stringify(body));
+      const data = await body.json();
+      return data;
     } catch (error) {
       console.error('Error on Submit. Error=', JSON.stringify(error));
     } finally {

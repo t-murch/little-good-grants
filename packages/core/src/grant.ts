@@ -1,14 +1,17 @@
-import { Table } from "sst/node/table";
-import dynamoDb from "./dynamodb";
-import { Grant, SparseGrant, hydrateGrant } from "./types/grants";
 import {
   AttributeValue,
   ExpressionAttributeNameMap,
   ExpressionAttributeValueMap,
 } from "aws-sdk/clients/dynamodb";
+import { Table } from "sst/node/table";
+import dynamoDb from "./dynamodb";
+import { FormGrant, Grant, SparseGrant, hydrateGrant } from "./types/grants";
 
-export async function create(sparseGrant: SparseGrant, approved: boolean) {
-  const fullGrant = hydrateGrant(sparseGrant);
+export async function create(
+  incomingGrant: FormGrant | SparseGrant,
+  approved: boolean,
+) {
+  const fullGrant = hydrateGrant(incomingGrant);
   fullGrant.approved = approved ? "yes" : "no";
 
   const params = {
@@ -132,7 +135,7 @@ function generateUpdateExpression(grant: Partial<Grant>) {
 export async function update(
   id: string,
   grant: Partial<Grant>,
-): Promise<"Success"> {
+): Promise<{ success: boolean }> {
   grant.last_updated = new Date().toISOString();
 
   const params = {
@@ -143,7 +146,7 @@ export async function update(
 
   await dynamoDb.update(params);
 
-  return "Success";
+  return { success: true };
 }
 
 export async function updateAnyYearSubmission(

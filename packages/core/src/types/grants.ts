@@ -4,6 +4,17 @@ import { v4 as uuid } from "uuid";
 const UNDEFINED_DATE = "UNDEFINED_DATE";
 type DeadlineDate = "varying" | "ongoing";
 
+const FormGrant = z.object({
+  amount: z.union([z.number(), z.literal("varies")]).optional(),
+  deadline_date: z.string().datetime(),
+  industries_served: z.union([z.literal("non-profit"), z.literal("profit")]),
+  name: z.string(),
+  organization_name: z.string(),
+  url: z.string().url(),
+});
+
+type FormGrant = z.infer<typeof FormGrant>;
+
 const SparseGrant = z.object({
   amount: z.union([z.number(), z.literal("varies")]),
   deadline_date: z.union([z.string().datetime(), z.literal(UNDEFINED_DATE)]),
@@ -16,7 +27,7 @@ const SparseGrant = z.object({
   industries_served: z.string(),
   name: z.string(),
   organization_name: z.string(),
-  url: z.string(),
+  url: z.string().url(),
 });
 
 type SparseGrant = z.infer<typeof SparseGrant>;
@@ -56,21 +67,36 @@ function generatePartitionKey(uuid: string): string {
 
 // Map 1x1 SparseGrant to Grant
 function hydrateGrant(
-  sparseGrant: SparseGrant,
+  thirstyGrant: FormGrant | SparseGrant,
   source: "user" | "scrape" = "user",
 ): Grant {
   const id = uuid();
+  const currentTime = new Date().toISOString();
 
-  return Object.assign(sparseGrant, {
-    amount: parseAmount(sparseGrant.amount),
+  return Object.assign(thirstyGrant, {
+    amount: parseAmount(thirstyGrant?.amount || null),
     approved: "no",
-    date_added: new Date().toISOString(),
+    date_added: currentTime,
+    deadline_type: (thirstyGrant.deadline_date === UNDEFINED_DATE
+      ? "ongoing"
+      : "fixed") as DeadlineDate,
     id: id,
-    last_updated: new Date().toISOString(),
+    last_updated: currentTime,
     source: source,
     year_uuid: generatePartitionKey(id),
   }) as Grant;
 }
 
-export { generatePartitionKey, Grant, hydrateGrant, parseAmount, SparseGrant };
-export type { Grant as GrantType, SparseGrant as SparseGrantType };
+export {
+  generatePartitionKey,
+  FormGrant,
+  Grant,
+  hydrateGrant,
+  parseAmount,
+  SparseGrant,
+};
+export type {
+  FormGrant as FormGrantType,
+  Grant as GrantType,
+  SparseGrant as SparseGrantType,
+};

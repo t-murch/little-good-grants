@@ -1,6 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
+import { tableFont } from '@/components/ui/table';
 import {
   Tooltip,
   TooltipContent,
@@ -8,12 +10,12 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip';
 import { ColumnDef } from '@tanstack/react-table';
+import { put } from 'aws-amplify/api';
 import { ArrowUpDown, ExternalLink } from 'lucide-react';
 import Image from 'next/image';
-import { Grant } from '@/app/types/grants';
+import { Grant } from '../../../../core/src/types/grants';
+import { onError } from '../lib/errorLib';
 import TooltipIcon from '/public/TooltipIcon.svg';
-import { Checkbox } from '@/components/ui/checkbox';
-import { tableFont } from '@/components/ui/table';
 
 export const columns: ColumnDef<Grant>[] = [
   {
@@ -43,10 +45,12 @@ export const columns: ColumnDef<Grant>[] = [
     },
     cell: ({ row }) => {
       const date = new Date(row.getValue('deadline_date'));
+      const deadlineType = String(row.original.deadline_type);
 
       if (isNaN(date.getDate())) {
-        return <div className="pl-3">{row.getValue('deadline_date')}</div>;
+        return <div className="pl-3">{deadlineType}</div>;
       }
+
       const month = date.getMonth() + 1;
       const day = date.getDate();
       const year = date.getFullYear();
@@ -130,7 +134,9 @@ export const columns: ColumnDef<Grant>[] = [
       }
       return (
         <div className="max-w-xs overflow-hidden overflow-ellipsis whitespace-nowrap">
-          {row.getValue('description')}
+          {typeof myDescription === 'string' && myDescription.length > 0
+            ? myDescription
+            : 'No description available'}
         </div>
       );
     },
@@ -156,35 +162,61 @@ export const adminColumns: ColumnDef<Grant>[] = [
     accessorKey: 'approved',
     header: 'Approved',
     cell: ({ row }) => {
-      const isApproved: boolean = row.getValue('approved');
+      const grant = row.original;
+      const isApproved = grant.approved;
+      async function toggleApproval(grant: Grant) {
+        grant.approved = isApproved === 'yes' ? 'no' : 'yes';
+
+        try {
+          const { body } = await put({
+            apiName: 'grants',
+            path: `/grant/${grant.id}`,
+            options: {
+              body: { grant },
+            },
+          }).response;
+
+          console.log('\n body= ', body + '\n');
+          const data = JSON.parse(await body.text());
+
+          return data;
+        } catch (error) {
+          return onError('DataTable.toggleApproval', error);
+        }
+      }
+
       return (
         <div className="flex items-center justify-center">
           <Checkbox
-            checked={isApproved}
-            onCheckedChange={() => 'CLICK -- Approved'}
+            checked={isApproved === 'yes'}
+            onCheckedChange={async () => {
+              console.log('CLICK -- Approved');
+              const response = await toggleApproval(grant);
+              console.log('\n response= ', response + '\n');
+            }}
           />
         </div>
       );
     },
   },
-  {
-    accessorKey: 'submitted',
-    header: 'Submitted',
-    cell: ({ row }) => {
-      const isSubmitted: boolean = row.getValue('submitted');
-      return (
-        <div className="flex items-center justify-center">
-          <Checkbox
-            className="flex items-center justify-center"
-            checked={isSubmitted}
-            onCheckedChange={() => 'CLICK -- Submitted'}
-          />
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: 'subDate',
-    header: 'Submission Date',
-  },
+  // {
+  //   accessorKey: 'submitted',
+  //   header: 'Submitted',
+  //   cell: ({ row }) => {
+  //     const isSubmitted: boolean = row.getValue('submitted');
+  //     return (
+  //       <div className="flex items-center justify-center">
+  //         <Checkbox
+  //           className="flex items-center justify-center"
+  //           checked={isSubmitted}
+  //           onCheckedChange={() => 'CLICK -- Submitted'}
+  //         />
+  //       </div>
+  //     );
+  //   },
+  // },
+  // {
+  //   accessorKey: 'subDate',
+  //   header: 'Submission Date',
+  // },
 ];

@@ -1,5 +1,3 @@
-'use client';
-
 import { adminColumns } from '@/app/grants/columns';
 import { DataTable } from '@/app/grants/data-table';
 import { Logout } from '@/app/ui/admin/Logout';
@@ -9,10 +7,25 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { Grant } from '../../../../core/src/types/grants';
+import { getApprovedGrants, getUnapprovedGrants } from '../lib/grantAPILib';
 
-export default function Page() {
-  const allSubmissions: string | any[] = [];
-  const allListings: string | any[] = [];
+export default async function Page() {
+  const displayName: 'AdminDashboard' = 'AdminDashboard';
+  const allSubmissions: Grant[] = [];
+  const allListings: Grant[] = [];
+
+  await onLoad();
+
+  async function onLoad() {
+    const [freshSubmissions, freshListings] = await Promise.all([
+      getUnapprovedGrants(),
+      getApprovedGrants(),
+    ]);
+
+    allSubmissions.push(...freshSubmissions);
+    allListings.push(...freshListings);
+  }
 
   return (
     <main className="bg-secondary flex p-24 min-h-screen w-screen flex-col items-center justify-between bg-back">

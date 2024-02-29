@@ -102,7 +102,7 @@ export function DataTable<TData, TValue>({
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
-      <div className="rounded-md border border-black overflow-hidden ">
+      <div className="rounded-md border border-black my-2 overflow-hidden ">
         <Table>
           <TableHeader className="sticky top-0 bg-stone-950 hover:bg-stone-950">
             {table.getHeaderGroups().map((headerGroup) => (
