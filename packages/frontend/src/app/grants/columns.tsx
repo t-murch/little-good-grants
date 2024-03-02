@@ -28,6 +28,7 @@ export const columns: ColumnDef<Grant>[] = [
   {
     accessorKey: 'organization_name',
     header: 'Organization Name',
+    id: 'Organization Name',
   },
   {
     accessorKey: 'deadline_date',
@@ -56,6 +57,7 @@ export const columns: ColumnDef<Grant>[] = [
       const year = date.getFullYear();
       return <div className="pl-3">{`${month}-${day}-${year}`}</div>;
     },
+    id: 'Deadline',
   },
   {
     accessorKey: 'url',
@@ -144,6 +146,7 @@ export const columns: ColumnDef<Grant>[] = [
   {
     accessorKey: 'industries_served',
     header: 'Industries Served',
+    id: 'Industries Served',
   },
 ];
 
@@ -158,6 +161,18 @@ export const mobileDefaultColumns = mobileDefaultColumnIDs.reduce(
 
 export const adminColumns: ColumnDef<Grant>[] = [
   ...columns,
+  {
+    accessorKey: 'date_added',
+    header: 'Date Added',
+    id: 'Date Added',
+    cell: ({ row }) => {
+      const date = new Date(row.getValue('date_added'));
+      const month = date.getMonth() + 1;
+      const day = date.getDate();
+      const year = date.getFullYear();
+      return <div className="pl-3">{`${month}-${day}-${year}`}</div>;
+    },
+  },
   {
     accessorKey: 'approved',
     header: 'Approved',
@@ -199,24 +214,4 @@ export const adminColumns: ColumnDef<Grant>[] = [
       );
     },
   },
-  // {
-  //   accessorKey: 'submitted',
-  //   header: 'Submitted',
-  //   cell: ({ row }) => {
-  //     const isSubmitted: boolean = row.getValue('submitted');
-  //     return (
-  //       <div className="flex items-center justify-center">
-  //         <Checkbox
-  //           className="flex items-center justify-center"
-  //           checked={isSubmitted}
-  //           onCheckedChange={() => 'CLICK -- Submitted'}
-  //         />
-  //       </div>
-  //     );
-  //   },
-  // },
-  // {
-  //   accessorKey: 'subDate',
-  //   header: 'Submission Date',
-  // },
 ];

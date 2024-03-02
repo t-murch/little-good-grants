@@ -25,8 +25,8 @@ export default async function Page() {
             path: '/grants/listings',
           }).response;
 
-          console.log('body= \n', body);
-          console.log('body.json()= \n', await body.json());
+          // console.log('body= \n', body);
+          // console.log('body.json()= \n', await body.json());
           tableData.push(...((await body.json()) as Grant[]));
         } catch (error) {
           onError(`${displayName}.loadTableData`, error);

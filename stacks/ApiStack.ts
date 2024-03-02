@@ -22,7 +22,6 @@ export function API({ stack }: StackContext) {
 
       "GET /grants/{approved}": addAuth("packages/functions/src/grant.list"),
       "GET /grant/{id}": addAuth("packages/functions/src/grant.get"),
-      // "PUT /grant/{id}": "packages/functions/src/grant.update",
       "PUT /grant/{id}": addAuth("packages/functions/src/grant.update"),
       "DELETE /grant/{id}": addAuth("packages/functions/src/grant.remove"),
     },

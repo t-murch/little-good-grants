@@ -20,8 +20,8 @@ export async function getApprovedGrants(): Promise<Grant[]> {
           path: '/grants/listings',
         }).response;
 
-        console.log('body= \n', body);
-        console.log('body.json()= \n', await body.json());
+        // console.log('body= \n', body);
+        // console.log('body.json()= \n', await body.json());
         grants.push(...((await body.json()) as Grant[]));
       } catch (error) {
         onError(`loadApprovedGrants`, error);
