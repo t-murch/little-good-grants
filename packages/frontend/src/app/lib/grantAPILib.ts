@@ -1,3 +1,5 @@
+'use server';
+
 import { cookies } from 'next/headers';
 import { runWithAmplifyServerContext } from '../utils/amplifyServerUtils';
 import { get } from 'aws-amplify/api/server';
@@ -33,8 +35,7 @@ export async function getApprovedGrants(): Promise<Grant[]> {
 }
 
 export async function getUnapprovedGrants(): Promise<Grant[]> {
-  const grants: Grant[] = [];
-  await runWithAmplifyServerContext({
+  const newGrants: Grant[] = await runWithAmplifyServerContext({
     nextServerContext: { cookies },
     operation: async (contextSpec) => {
       try {
@@ -43,13 +44,34 @@ export async function getUnapprovedGrants(): Promise<Grant[]> {
           path: '/grants/false',
         }).response;
 
-        grants.push(...((await body.json()) as Grant[]));
+        return [...((await body.json()) as Grant[])];
       } catch (error) {
         onError(`loadUnapprovedGrants`, error);
         return [];
       }
-      return grants;
     },
   });
-  return grants;
+
+  return newGrants;
+}
+
+export async function scrapeLwlJob(): Promise<boolean> {
+  const { status } = await runWithAmplifyServerContext({
+    nextServerContext: { cookies },
+    operation: async (contextSpec) => {
+      try {
+        const { body } = await get(contextSpec, {
+          apiName: 'grants',
+          path: '/grants/scrape',
+        }).response;
+
+        return (await body.json()) as { status: string };
+      } catch (error) {
+        onError(`invokeScrapeLwlJob`, error);
+        return { status: 'error' };
+      }
+    },
+  });
+
+  return status === 'success';
 }
