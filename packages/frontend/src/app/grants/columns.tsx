@@ -28,7 +28,6 @@ export const columns: ColumnDef<Grant>[] = [
   {
     accessorKey: 'organization_name',
     header: 'Organization Name',
-    id: 'Organization Name',
   },
   {
     accessorKey: 'deadline_date',
@@ -57,7 +56,6 @@ export const columns: ColumnDef<Grant>[] = [
       const year = date.getFullYear();
       return <div className="pl-3">{`${month}-${day}-${year}`}</div>;
     },
-    id: 'Deadline',
   },
   {
     accessorKey: 'url',
@@ -146,7 +144,6 @@ export const columns: ColumnDef<Grant>[] = [
   {
     accessorKey: 'industries_served',
     header: 'Industries Served',
-    id: 'Industries Served',
   },
 ];
 
@@ -161,10 +158,10 @@ export const mobileDefaultColumns = mobileDefaultColumnIDs.reduce(
 
 export const adminColumns: ColumnDef<Grant>[] = [
   ...columns,
+  // column for date added
   {
     accessorKey: 'date_added',
     header: 'Date Added',
-    id: 'Date Added',
     cell: ({ row }) => {
       const date = new Date(row.getValue('date_added'));
       const month = date.getMonth() + 1;
@@ -191,8 +188,9 @@ export const adminColumns: ColumnDef<Grant>[] = [
             },
           }).response;
 
-          console.log('\n body= ', body + '\n');
+          console.debug('\n body= ', body + '\n');
           const data = JSON.parse(await body.text());
+          console.debug('data: ', data);
 
           return data;
         } catch (error) {

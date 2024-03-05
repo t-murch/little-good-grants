@@ -8,8 +8,13 @@ import {
   AccordionTrigger,
 } from '@/components/ui/accordion';
 import { Grant } from '../../../../core/src/types/grants';
-import { getApprovedGrants, getUnapprovedGrants } from '../lib/grantAPILib';
+import {
+  getApprovedGrants,
+  getUnapprovedGrants,
+  scrapeLwlJob,
+} from '../lib/grantAPILib';
 import { onError } from '../lib/errorLib';
+import ScrapeButton from '../ui/admin/ScrapeButton';
 
 export default async function Page() {
   const displayName: 'AdminDashboard' = 'AdminDashboard';
@@ -32,6 +37,12 @@ export default async function Page() {
 
     allSubmissions.push(...freshSubmissions);
     allListings.push(...freshListings);
+    console.debug('allListings: ', allListings);
+  }
+
+  function runLwLJob(): string {
+    console.error('Function not implemented.');
+    return 'poopy';
   }
 
   return (
@@ -54,6 +65,11 @@ export default async function Page() {
         </section>
         <section className="flex flex-col grow mt-4 w-full h-auto">
           {/* <section className="lg:h-auto lg:w-full p-2 flex flex-col rounded-md border border-purple-600"> */}
+          {/* // A compponent of buttons to launch scrape jobs.  */}
+          <section className="flex flex-col w-full pb-2 space-y-4">
+            <h2 className="font-bold text-xl">Admin Actions</h2>
+            <ScrapeButton action={scrapeLwlJob} jobName="LwL" />
+          </section>
           <Accordion
             className="rounded-md overflow-hidden"
             type="single"
