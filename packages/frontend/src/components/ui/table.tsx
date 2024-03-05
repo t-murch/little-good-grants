@@ -22,11 +22,7 @@ const TableHeader = React.forwardRef<
   HTMLTableSectionElement,
   React.HTMLAttributes<HTMLTableSectionElement>
 >(({ className, ...props }, ref) => (
-  <thead
-    ref={ref}
-    className={cn('whitespace-nowrap [&_tr]:border-b', className)}
-    {...props}
-  />
+  <thead ref={ref} className={cn('[&_tr]:border-b', className)} {...props} />
 ));
 TableHeader.displayName = 'TableHeader';
 
@@ -64,8 +60,7 @@ const TableRow = React.forwardRef<
   <tr
     ref={ref}
     className={cn(
-      'border-b transition-colors data-[state=selected]:bg-muted',
-      tableFont,
+      'border-b transition-colors hover:bg-muted/50 data-[state=selected]:bg-muted',
       className,
     )}
     {...props}
@@ -80,7 +75,7 @@ const TableHead = React.forwardRef<
   <th
     ref={ref}
     className={cn(
-      'h-12 px-2 text-left align-middle font-bold [&:has([role=checkbox])]:pr-0',
+      'h-12 px-2 text-left align-middle font-medium text-muted-foreground [&:has([role=checkbox])]:pr-0',
       className,
     )}
     {...props}
@@ -95,7 +90,7 @@ const TableCell = React.forwardRef<
   <td
     ref={ref}
     className={cn(
-      'px-2 py-1 align-middle [&:has([role=checkbox])]:pr-0',
+      'py-4 px-2 align-middle [&:has([role=checkbox])]:pr-0',
       className,
     )}
     {...props}
@@ -120,9 +115,9 @@ export {
   TableBody,
   TableCaption,
   TableCell,
+  tableFont,
   TableFooter,
   TableHead,
   TableHeader,
   TableRow,
-  tableFont,
 };

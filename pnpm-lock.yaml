@@ -32,6 +32,9 @@ importers:
       aws-sdk:
         specifier: ^2.1555.0
         version: 2.1555.0
+      playwright:
+        specifier: ^1.42.1
+        version: 1.42.1
       uuid:
         specifier: ^9.0.1
         version: 9.0.1
@@ -226,7 +229,7 @@ packages:
     engines: {node: '>=6.0.0'}
     dependencies:
       '@jridgewell/gen-mapping': 0.3.5
-      '@jridgewell/trace-mapping': 0.3.24
+      '@jridgewell/trace-mapping': 0.3.25
 
   /@aws-amplify/adapter-nextjs@1.0.16(aws-amplify@6.0.16)(next@14.0.3):
     resolution: {integrity: sha512-Ku9SQr8gdKeQ8F+4qZ6kgObLc4Aq8F3mve8oG3r6Tnun2HfMBPIEO8OsCRjuHKbj9DkiwN4njq0pTyjKyOPibQ==}
@@ -548,8 +551,8 @@ packages:
       - aws-crt
     dev: true
 
-  /@aws-sdk/client-cloudformation@3.525.0:
-    resolution: {integrity: sha512-z+IbnnVWOoS0C5s3JfheS6zxhRfJAk57zxKMD0ofTFW/eIDxhyvd12gnTWUNZch6Lz0TeeqK/hsxVvF2p0hf4A==}
+  /@aws-sdk/client-cloudformation@3.526.0:
+    resolution: {integrity: sha512-Zz6swHfQdauuCJY3j+5SUPMFWTxgpAWN3x5dl/8jdn0Q1GdiWzZ0/5+jZr83mE7ola3UUH3LP/cw1UIljJO0ZA==}
     engines: {node: '>=14.0.0'}
     dependencies:
       '@aws-crypto/sha256-browser': 3.0.0
@@ -3303,7 +3306,7 @@ packages:
     dependencies:
       '@babel/types': 7.24.0
       '@jridgewell/gen-mapping': 0.3.5
-      '@jridgewell/trace-mapping': 0.3.24
+      '@jridgewell/trace-mapping': 0.3.25
       jsesc: 2.5.2
 
   /@babel/helper-compilation-targets@7.23.6:
@@ -4229,6 +4232,12 @@ packages:
 
   /@jridgewell/trace-mapping@0.3.24:
     resolution: {integrity: sha512-+VaWXDa6+l6MhflBvVXjIEAzb59nQ2JUK3bwRp2zRpPtU+8TFRy9Gg/5oIcNlkEL5PGlBFGfemUVvIgLnTzq7Q==}
+    dependencies:
+      '@jridgewell/resolve-uri': 3.1.2
+      '@jridgewell/sourcemap-codec': 1.4.15
+
+  /@jridgewell/trace-mapping@0.3.25:
+    resolution: {integrity: sha512-vNk6aEwybGtawWmy/PzwnGDOjCkLWSD2wqvjGGAgOAwCGWySYXfYoxt00IJkTF+8Lb57DwOb3Aa0o9CApepiYQ==}
     dependencies:
       '@jridgewell/resolve-uri': 3.1.2
       '@jridgewell/sourcemap-codec': 1.4.15
@@ -6991,8 +7000,8 @@ packages:
       uuid: 8.0.0
       xml2js: 0.6.2
 
-  /aws-sdk@2.1569.0:
-    resolution: {integrity: sha512-9puKjesHKOjAYPqFurW/9nv3qhQ+STu3bVa5PN158SCeZPE6NsxZIWnHLglJvKU7N8UXJo1aJHmKDUGrsS7rXw==}
+  /aws-sdk@2.1571.0:
+    resolution: {integrity: sha512-Hixs1aD+7IwsP/Bkb7StFCrOC9ejmw8zBv8xVqEtEughRX6AF8bLKFRoJRbD4V6TrM+gPGpCqoFlpa84HLHkSA==}
     engines: {node: '>= 10.0.0'}
     dependencies:
       buffer: 4.9.2
@@ -7218,7 +7227,7 @@ packages:
       '@aws-cdk/cloud-assembly-schema': 2.124.0
       '@aws-cdk/cx-api': 2.124.0(@aws-cdk/cloud-assembly-schema@2.124.0)
       archiver: 5.3.2
-      aws-sdk: 2.1569.0
+      aws-sdk: 2.1571.0
       glob: 7.2.3
       mime: 2.6.0
       yargs: 16.2.0
@@ -8545,7 +8554,6 @@ packages:
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
-    dev: true
     optional: true
 
   /fsevents@2.3.3:
@@ -10130,6 +10138,22 @@ packages:
       find-up: 3.0.0
     dev: true
 
+  /playwright-core@1.42.1:
+    resolution: {integrity: sha512-mxz6zclokgrke9p1vtdy/COWBH+eOZgYUVVU34C73M+4j4HLlQJHtfcqiqqxpP0o8HhMkflvfbquLX5dg6wlfA==}
+    engines: {node: '>=16'}
+    hasBin: true
+    dev: false
+
+  /playwright@1.42.1:
+    resolution: {integrity: sha512-PgwB03s2DZBcNRoW+1w9E+VkLBxweib6KTXM0M3tkiT4jVxKSi6PmVJ591J+0u10LUrgxB7dLRbiJqO5s2QPMg==}
+    engines: {node: '>=16'}
+    hasBin: true
+    dependencies:
+      playwright-core: 1.42.1
+    optionalDependencies:
+      fsevents: 2.3.2
+    dev: false
+
   /postcss-import@15.1.0(postcss@8.4.35):
     resolution: {integrity: sha512-hpr+J05B2FVYUAXHeK1YyI267J/dDDhMU6B6civm8hSY1jYJnBXxzKDKDswzJmtLHryrjhnDjqqp/49t8FALew==}
     engines: {node: '>=14.0.0'}
@@ -10525,8 +10549,8 @@ packages:
     resolution: {integrity: sha512-p5HzqKlMK02mvnalm3mavRaUeRljqKoE7r0QgDDzbZ9C0jFowisYLPU9e52gCZOd7Dn6KAWTPbVucJtcPfAIxA==}
     dev: true
 
-  /remeda@1.46.0:
-    resolution: {integrity: sha512-adcAmUxfHPkZXQxgxHkhe2c6y00gyQkApBxlFNkfnkIBkNPMKuDGL8lI+1FhKTct9pnqWp4fFqLbafzP+KuLOw==}
+  /remeda@1.46.2:
+    resolution: {integrity: sha512-ZpC0t0sAKX+ROyc6tEkbwLBLiURdEgcyDkSTO+CC04CNAsc11z+zjVXZLlAmGHustn4Wo+eAu00OVMqnUj1aOw==}
     dev: true
 
   /require-directory@2.1.1:
@@ -10924,7 +10948,7 @@ packages:
       '@aws-cdk/cloudformation-diff': 2.124.0
       '@aws-cdk/cx-api': 2.124.0(@aws-cdk/cloud-assembly-schema@2.124.0)
       '@aws-crypto/sha256-js': 5.2.0
-      '@aws-sdk/client-cloudformation': 3.525.0
+      '@aws-sdk/client-cloudformation': 3.526.0
       '@aws-sdk/client-ecs': 3.525.0
       '@aws-sdk/client-eventbridge': 3.525.0
       '@aws-sdk/client-iam': 3.525.0
@@ -10949,7 +10973,7 @@ packages:
       adm-zip: 0.5.10
       aws-cdk-lib: 2.124.0(constructs@10.3.0)
       aws-iot-device-sdk: 2.2.13
-      aws-sdk: 2.1569.0
+      aws-sdk: 2.1571.0
       builtin-modules: 3.2.0
       cdk-assets: 2.124.0
       chalk: 5.3.0
@@ -10978,7 +11002,7 @@ packages:
       openid-client: 5.6.4
       ora: 6.3.1
       react: 18.2.0
-      remeda: 1.46.0
+      remeda: 1.46.2
       sst-aws-cdk: 2.124.0
       tree-kill: 1.2.2
       undici: 5.28.3

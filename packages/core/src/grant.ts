@@ -2,17 +2,17 @@ import {
   AttributeValue,
   ExpressionAttributeNameMap,
   ExpressionAttributeValueMap,
-} from "aws-sdk/clients/dynamodb";
-import { Table } from "sst/node/table";
-import dynamoDb from "./dynamodb";
-import { FormGrant, Grant, SparseGrant, hydrateGrant } from "./types/grants";
+} from 'aws-sdk/clients/dynamodb';
+import { Table } from 'sst/node/table';
+import dynamoDb from './dynamodb';
+import { FormGrant, Grant, SparseGrant, hydrateGrant } from './types/grants';
 
 export async function create(
   incomingGrant: FormGrant | SparseGrant,
   approved: boolean,
 ) {
   const fullGrant = hydrateGrant(incomingGrant);
-  fullGrant.approved = approved ? "yes" : "no";
+  fullGrant.approved = approved ? 'yes' : 'no';
 
   const params = {
     TableName: Table.Grants.tableName,
@@ -24,6 +24,32 @@ export async function create(
   return fullGrant.id;
 }
 
+// bulk insert grants
+export async function bulkInsert(grantList: Grant[]): Promise<'Success'> {
+  console.debug('Inserting grants', grantList);
+  const params = {
+    RequestItems: {
+      [Table.Grants.tableName]: grantList.map((grant) => ({
+        PutRequest: {
+          Item: grant,
+        },
+      })),
+    },
+  };
+
+  try {
+    const result = await dynamoDb.batchPut(params);
+    if (result.UnprocessedItems) {
+      console.error('Unprocessed items', result.UnprocessedItems);
+    }
+    console.debug('Grants inserted', grantList.length, result);
+  } catch (error) {
+    console.error('Error inserting grants', error);
+  } finally {
+    return 'Success';
+  }
+}
+
 // Retrieve all UN-approved grants
 // with future or varying deadlines
 // unapproved grants = submissions
@@ -31,16 +57,16 @@ export async function create(
 export async function listFutureDefined(approved: boolean) {
   const params = {
     TableName: Table.Grants.tableName,
-    IndexName: "approvedDeadlineIndex",
+    IndexName: 'approvedDeadlineIndex',
     KeyConditionExpression:
-      "#approved = :approved AND #deadline_date >= :today",
+      '#approved = :approved AND #deadline_date >= :today',
     ExpressionAttributeNames: {
-      "#approved": "approved",
-      "#deadline_date": "deadline_date",
+      '#approved': 'approved',
+      '#deadline_date': 'deadline_date',
     },
     ExpressionAttributeValues: {
-      ":approved": approved ? "yes" : "no",
-      ":today": new Date().toISOString(),
+      ':approved': approved ? 'yes' : 'no',
+      ':today': new Date().toISOString(),
     },
   };
 
@@ -55,20 +81,20 @@ export async function listFutureDefined(approved: boolean) {
 export async function listOngoing(approved: boolean) {
   const params = {
     TableName: Table.Grants.tableName,
-    IndexName: "approvedDeadlineIndex",
+    IndexName: 'approvedDeadlineIndex',
     KeyConditionExpression:
-      "#approved = :approved AND #deadline_date = :undefinedDate",
-    FilterExpression: "#deadline_type = :ongoing OR #deadline_type = :varying",
+      '#approved = :approved AND #deadline_date = :undefinedDate',
+    FilterExpression: '#deadline_type = :ongoing OR #deadline_type = :varying',
     ExpressionAttributeNames: {
-      "#approved": "approved",
-      "#deadline_date": "deadline_date",
-      "#deadline_type": "deadline_type",
+      '#approved': 'approved',
+      '#deadline_date': 'deadline_date',
+      '#deadline_type': 'deadline_type',
     },
     ExpressionAttributeValues: {
-      ":approved": approved ? "yes" : "no",
-      ":undefinedDate": "UNDEFINED_DATE",
-      ":ongoing": "ongoing",
-      ":varying": "varying",
+      ':approved': approved ? 'yes' : 'no',
+      ':undefinedDate': 'UNDEFINED_DATE',
+      ':ongoing': 'ongoing',
+      ':varying': 'varying',
     },
   };
 
@@ -82,7 +108,7 @@ export async function listOngoing(approved: boolean) {
 export async function get(
   id: string,
 ): Promise<
-  { data: Grant; success: true } | { error: "Grant not found"; success: false }
+  { data: Grant; success: true } | { error: 'Grant not found'; success: false }
 > {
   const params = {
     TableName: Table.Grants.tableName,
@@ -90,7 +116,7 @@ export async function get(
   };
 
   const data = await dynamoDb.get(params);
-  if (!data.Item) return { error: "Grant not found", success: false };
+  if (!data.Item) return { error: 'Grant not found', success: false };
 
   return { data: data.Item as Grant, success: true };
 }
@@ -99,7 +125,7 @@ export async function getAnyYearSubmission(
   id: string,
   year: string,
 ): Promise<
-  { data: Grant; success: true } | { error: "Grant not found"; success: false }
+  { data: Grant; success: true } | { error: 'Grant not found'; success: false }
 > {
   const params = {
     TableName: Table.Grants.tableName,
@@ -107,7 +133,7 @@ export async function getAnyYearSubmission(
   };
 
   const data = await dynamoDb.get(params);
-  if (!data.Item) return { error: "Grant not found", success: false };
+  if (!data.Item) return { error: 'Grant not found', success: false };
 
   return { data: data.Item as Grant, success: true };
 }
@@ -118,14 +144,14 @@ function generateUpdateExpression(grant: Partial<Grant>) {
   const expressionAttributeNames: ExpressionAttributeNameMap = {};
   let key: keyof typeof grant;
   for (key in grant) {
-    if (grant[key] !== undefined && key !== "id" && key !== "year_uuid") {
+    if (grant[key] !== undefined && key !== 'id' && key !== 'year_uuid') {
       updateExpression.push(`#${key} = :${key}`);
       (expressionAttributeValues[`:${key}`] = grant[key] as AttributeValue),
         (expressionAttributeNames[`#${key}`] = key);
     }
   }
   return {
-    UpdateExpression: `set ${updateExpression.join(", ")}`,
+    UpdateExpression: `set ${updateExpression.join(', ')}`,
     ExpressionAttributeValues: expressionAttributeValues,
     ExpressionAttributeNames: expressionAttributeNames,
   };
@@ -153,43 +179,43 @@ export async function updateAnyYearSubmission(
   id: string,
   year: string,
   grant: Grant,
-): Promise<"Success"> {
+): Promise<'Success'> {
   const params = {
     TableName: Table.Grants.tableName,
     Key: { year_uuid: `${year}-${id}` },
     UpdateExpression:
-      "set poop = :amount, #deadline_date = :deadline_date, #description = :description, #industries_served = :industries_served, #name = :name, #organization_name = :organization_name, #url = :url",
+      'set poop = :amount, #deadline_date = :deadline_date, #description = :description, #industries_served = :industries_served, #name = :name, #organization_name = :organization_name, #url = :url',
     ExpressionAttributeValues: {
-      ":amount": grant.amount,
-      ":deadline_date": grant.deadline_date,
-      ":description": grant.description,
-      ":industries_served": grant.industries_served,
-      ":name": grant.name,
-      ":organization_name": grant.organization_name,
-      ":url": grant.url,
+      ':amount': grant.amount,
+      ':deadline_date': grant.deadline_date,
+      ':description': grant.description,
+      ':industries_served': grant.industries_served,
+      ':name': grant.name,
+      ':organization_name': grant.organization_name,
+      ':url': grant.url,
     },
   };
 
   await dynamoDb.update(params);
 
-  return "Success";
+  return 'Success';
 }
 
 // Delete a grant by id
-export async function remove(id: string): Promise<"Success"> {
+export async function remove(id: string): Promise<'Success'> {
   const params = {
     TableName: Table.Grants.tableName,
     Key: { year_uuid: `${new Date().getFullYear().toString()}-${id}` },
   };
   await dynamoDb.delete(params);
 
-  return "Success";
+  return 'Success';
 }
 
 export async function deleteAnyYearSubmission(
   id: string,
   year: string,
-): Promise<"Success"> {
+): Promise<'Success'> {
   const params = {
     TableName: Table.Grants.tableName,
     Key: { year_uuid: `${year}-${id}` },
@@ -197,7 +223,7 @@ export async function deleteAnyYearSubmission(
 
   await dynamoDb.delete(params);
 
-  return "Success";
+  return 'Success';
 }
 
-export * as GrantService from "./grant";
+export * as GrantService from './grant';
