@@ -1,6 +1,6 @@
 import { Browser, chromium } from 'playwright';
-import { Grant, parseAmount } from '../../../../../core/src/types/grants';
 import { createWriteStream } from 'node:fs';
+import { Grant, parseAmount } from '../types/grants';
 
 type ScrapeRow = {
   clientRowID: string;
@@ -12,7 +12,7 @@ type LeftPaneRowMap = {
   name: string;
 };
 
-async function scrapeSite(): Promise<Grant[]> {
+export async function ladiesLaunchJob(): Promise<Grant[]> {
   const normalizedData: Grant[] = [];
   let browser: Browser | undefined = undefined;
 
@@ -36,7 +36,7 @@ async function scrapeSite(): Promise<Grant[]> {
       .first()
       .locator('.count')
       .innerText();
-    console.log('Table displays %s Open Grants', countText);
+    console.debug('Table displays %s Open Grants', countText);
 
     const leftPaneRows = tableContainer.getByTestId('data-row');
     const leftPaneRowCount = await leftPaneRows.count();
@@ -153,6 +153,6 @@ async function scrapeSite(): Promise<Grant[]> {
   }
 }
 
-scrapeSite()
-  .then((result) => console.log(result))
-  .catch((error) => console.error(error));
+// ladiesLaunchJob()
+//   .then((result) => console.debug(result))
+//   .catch((error) => console.error(error));

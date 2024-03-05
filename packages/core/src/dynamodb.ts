@@ -1,6 +1,6 @@
-import AWS from "aws-sdk";
-import { DocumentClient } from "aws-sdk/lib/dynamodb/document_client";
-import { Grant } from "./types/grants";
+import AWS from 'aws-sdk';
+import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client';
+import { Grant } from './types/grants';
 
 const client = new AWS.DynamoDB.DocumentClient();
 
@@ -12,6 +12,8 @@ export default {
     client.update(params).promise(),
   delete: (params: DocumentClient.DeleteItemInput) =>
     client.delete(params).promise(),
+  batchPut: (params: DocumentClient.BatchWriteItemInput) =>
+    client.batchWrite(params).promise(),
 };
 
 export async function combineQueries(
