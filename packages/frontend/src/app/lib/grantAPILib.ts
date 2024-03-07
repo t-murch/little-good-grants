@@ -5,6 +5,7 @@ import { runWithAmplifyServerContext } from '../utils/amplifyServerUtils';
 import { get, post } from 'aws-amplify/api/server';
 import { onError } from './errorLib';
 import { Grant } from '../../../../core/src/types/grants';
+import { post as browserPost, put } from 'aws-amplify/api';
 
 /*
  * SERVER ACTIONS BELOW
@@ -77,4 +78,28 @@ export async function scrapeLwlJob(): Promise<boolean> {
   });
 
   return status === 'success';
+}
+
+// Column Actions - Client Functions
+export async function toggleApproval(grant: Grant): Promise<any> {
+  const isApproved = grant.approved;
+  grant.approved = isApproved === 'yes' ? 'no' : 'yes';
+
+  try {
+    const { body } = await browserPost({
+      apiName: 'grants',
+      path: `/grant/${grant.id}`,
+      options: {
+        body: { grant },
+      },
+    }).response;
+
+    console.debug('\n body= ', body + '\n');
+    const data = JSON.parse(await body.text());
+    console.debug('data: ', data);
+
+    return data;
+  } catch (error) {
+    return onError('DataTable.toggleApproval', error);
+  }
 }

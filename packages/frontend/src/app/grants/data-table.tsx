@@ -18,7 +18,9 @@ import {
 } from '@/components/ui/table';
 import {
   ColumnDef,
+  RowData,
   SortingState,
+  TableMeta,
   VisibilityState,
   flexRender,
   getCoreRowModel,
@@ -27,28 +29,49 @@ import {
   useReactTable,
 } from '@tanstack/react-table';
 import * as React from 'react';
+import { Grant } from '../../../../core/src/types/grants';
+import { toggleApproval } from '../lib/grantAPILib';
+import { onError } from '../lib/errorLib';
 
-interface DataTableProps<TData, TValue> {
+interface DataTableProps<TData extends Grant, TValue> {
   // columns: ColumnDef<TData, TValue>[];
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
 }
 
+declare module '@tanstack/react-table' {
+  interface TableMeta<TData extends RowData> {
+    handleApproval: (grant: Grant) => void;
+  }
+}
+
 export function DataTable<TData, TValue>({
   columns: columnsProps,
   data: dataProp,
-}: DataTableProps<TData, TValue>) {
+}: DataTableProps<Grant, TValue>) {
+  const [tableData, setTableData] = React.useState(dataProp);
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({});
   const { width } = useWindowSize();
   const isMobile = width && width < 768;
 
-  const data = React.useMemo(() => {
-    return Array.isArray(dataProp) ? dataProp : [];
-  }, [dataProp]);
+  const data = React.useMemo(() => tableData, [tableData]);
 
   const columns = React.useMemo(() => columnsProps, [columnsProps]);
+
+  const handleApproval = async (grant: Grant) => {
+    // Filter out the grant from the list and update the state
+    const newList = tableData.filter((g) => g.id !== grant.id);
+    setTableData(newList);
+
+    // Call the API to update the grant
+    try {
+      const updateResponse = await toggleApproval(grant);
+    } catch (error) {
+      onError('toggleApproval', error);
+    }
+  };
 
   const table = useReactTable({
     data,
@@ -58,6 +81,9 @@ export function DataTable<TData, TValue>({
     initialState: {
       // columnVisibility: mobileDefaultColumns,
       pagination: { pageIndex: 0, pageSize: 25 },
+    },
+    meta: {
+      handleApproval: handleApproval,
     },
     onSortingChange: setSorting,
     getSortedRowModel: getSortedRowModel(),

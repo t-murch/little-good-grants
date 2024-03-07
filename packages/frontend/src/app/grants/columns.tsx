@@ -173,40 +173,22 @@ export const adminColumns: ColumnDef<Grant>[] = [
   {
     accessorKey: 'approved',
     header: 'Approved',
-    cell: ({ row }) => {
+    cell: ({ row, table }) => {
       const grant = row.original;
       const isApproved = grant.approved;
-      async function toggleApproval(grant: Grant) {
-        grant.approved = isApproved === 'yes' ? 'no' : 'yes';
-
-        try {
-          const { body } = await put({
-            apiName: 'grants',
-            path: `/grant/${grant.id}`,
-            options: {
-              body: { grant },
-            },
-          }).response;
-
-          console.debug('\n body= ', body + '\n');
-          const data = JSON.parse(await body.text());
-          console.debug('data: ', data);
-
-          return data;
-        } catch (error) {
-          return onError('DataTable.toggleApproval', error);
-        }
-      }
+      // get the handleApproval function and throw an error if it doesn't exist
+      const handleRowApproval =
+        table.options.meta?.handleApproval ||
+        (() => {
+          throw new Error('No handleApproval function');
+        });
+      // const handleRowApproval = table.options.meta?.handleApproval || (() => {throw new Error('No handleApproval function')});
 
       return (
         <div className="flex items-center justify-center">
           <Checkbox
             checked={isApproved === 'yes'}
-            onCheckedChange={async () => {
-              console.log('CLICK -- Approved');
-              const response = await toggleApproval(grant);
-              console.log('\n response= ', response + '\n');
-            }}
+            onCheckedChange={() => handleRowApproval(grant)}
           />
         </div>
       );

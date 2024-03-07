@@ -11,5 +11,6 @@ export function onError(locationString: string, error: unknown): string {
     errorMessage = String(error);
   }
   console.error(`${locationString} Error=`, errorMessage);
+  // console.debug(`${locationString} Error=`, error);
   return errorMessage;
 }
