@@ -14,6 +14,7 @@
     "vitest": "^1.2.2"
   },
   "dependencies": {
+    "@playwright/browser-chromium": "^1.42.1",
     "aws-lambda": "^1.0.7",
     "aws-sdk": "^2.1555.0",
     "playwright": "^1.42.1",
@@ -21,4 +22,3 @@
     "zod": "^3.22.4"
   }
 }
-

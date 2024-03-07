@@ -1,6 +1,11 @@
-import { Browser, chromium } from 'playwright';
-import { createWriteStream } from 'node:fs';
-import { Grant, parseAmount } from '../types/grants';
+import { Browser, chromium } from "playwright";
+import { createWriteStream } from "node:fs";
+import {
+  Grant,
+  SparseGrant,
+  parseAmount,
+  parseDeadlineDate,
+} from "../types/grants";
 
 type ScrapeRow = {
   clientRowID: string;
@@ -12,54 +17,57 @@ type LeftPaneRowMap = {
   name: string;
 };
 
-export async function ladiesLaunchJob(): Promise<Grant[]> {
-  const normalizedData: Grant[] = [];
+export async function ladiesLaunchJob(): Promise<SparseGrant[]> {
+  const normalizedData: SparseGrant[] = [];
   let browser: Browser | undefined = undefined;
 
   try {
     const startTime = Date.now();
     browser = await chromium.launch({});
-    const page = await browser.newPage();
+    const context = await browser.newContext({
+      viewport: { width: 1920, height: 600 },
+    });
+    const page = await context.newPage();
 
     const LADIES_LAUNCH_URL =
-      'https://www.ladieswholaunch.org/small-business-grants';
-    const airTableClass = '.airtable-embed';
+      "https://www.ladieswholaunch.org/small-business-grants";
+    const airTableClass = ".airtable-embed";
     const returnPayload: { [key: string]: ScrapeRow } = {};
 
     await page.goto(LADIES_LAUNCH_URL);
     await page.waitForURL(LADIES_LAUNCH_URL);
-    console.log('WENT TO THE URL: %s', LADIES_LAUNCH_URL);
+    console.log("WENT TO THE URL: %s", LADIES_LAUNCH_URL);
 
     const tableContainer = page.frameLocator(airTableClass).first();
     const countText = await tableContainer
-      .getByTestId('group-left-pane')
+      .getByTestId("group-left-pane")
       .first()
-      .locator('.count')
+      .locator(".count")
       .innerText();
-    console.debug('Table displays %s Open Grants', countText);
+    console.debug("Table displays %s Open Grants", countText);
 
-    const leftPaneRows = tableContainer.getByTestId('data-row');
+    const leftPaneRows = tableContainer.getByTestId("data-row");
     const leftPaneRowCount = await leftPaneRows.count();
     const headerMap: { [key: string]: string } = {};
 
     // Build Map<columnId, category>
     const rightPanelHeaderContainer = tableContainer
-      .locator('.headerRow.rightPane')
+      .locator(".headerRow.rightPane")
       .first();
     const rightPanelHeaderKeys =
-      rightPanelHeaderContainer.locator('.cell.header');
+      rightPanelHeaderContainer.locator(".cell.header");
     const rightPaneHeaderRowCount = await rightPanelHeaderKeys.count();
 
     for (let i = 0; i < rightPaneHeaderRowCount; i++) {
       const thisKey = rightPanelHeaderKeys.nth(i);
-      const thisColumnId = await thisKey.getAttribute('data-columnid');
-      const columnName = await thisKey.locator('.name').innerText();
+      const thisColumnId = await thisKey.getAttribute("data-columnid");
+      const columnName = await thisKey.locator(".name").innerText();
       if (thisColumnId && columnName) headerMap[thisColumnId] = columnName;
     }
 
     const rightPanelData = tableContainer
-      .locator('.dataRightPaneInnerContent.paneInnerContent')
-      .locator('.dataRow.rightPane');
+      .locator(".dataRightPaneInnerContent.paneInnerContent")
+      .locator(".dataRow.rightPane");
     const rightPanelRowCount = await rightPanelData.count();
 
     // Build initial list of rows with names
@@ -68,7 +76,7 @@ export async function ladiesLaunchJob(): Promise<Grant[]> {
       const thisRow = leftPaneRows.nth(i);
 
       leftPaneRow.clientRowID =
-        (await thisRow.getAttribute('data-rowid')) || '';
+        (await thisRow.getAttribute("data-rowid")) || "";
       const rawNameField = await thisRow.innerText();
       const normalNameField = rawNameField.slice(1).trimStart();
       leftPaneRow.name = normalNameField;
@@ -80,16 +88,16 @@ export async function ladiesLaunchJob(): Promise<Grant[]> {
 
     for (let i = 0; i < rightPanelRowCount; i++) {
       const thisRow = rightPanelData.nth(i);
-      const correspondingRowID = await thisRow.getAttribute('data-rowid');
+      const correspondingRowID = await thisRow.getAttribute("data-rowid");
 
       if (!correspondingRowID) break; // TO-DO: Add error logging/handling.
 
-      const rowData = thisRow.locator('.cell.read');
+      const rowData = thisRow.locator(".cell.read");
       const rowPropertyCount = await rowData.count();
 
       for (let j = 0; j < rowPropertyCount; j++) {
         const thisProperty = rowData.nth(j);
-        const thisColumnId = await thisProperty.getAttribute('data-columnid');
+        const thisColumnId = await thisProperty.getAttribute("data-columnid");
 
         if (!thisColumnId) break;
         const cellText = await thisProperty.innerText();
@@ -106,22 +114,22 @@ export async function ladiesLaunchJob(): Promise<Grant[]> {
         .map(([_, grantRow]) => {
           const rowCopy = { ...grantRow } as { [key: string]: string };
 
-          const cleanGrantDAO: Grant = {
-            amount: parseAmount(rowCopy?.['Amount']),
-            approved: 'no',
-            deadline_date: rowCopy?.['Deadline'],
-            description: rowCopy?.['Description'],
-            industries_served: rowCopy?.['Industries Served'],
-            name: rowCopy?.['name'],
-            organization_name: rowCopy?.['Organization Name'],
-            source: 'scrape',
-            url: rowCopy?.['URL'],
-          } as Grant;
+          console.log("ROW COPY: ", rowCopy);
+          const cleanGrantDAO: SparseGrant = {
+            amount: parseAmount(rowCopy?.["Amount"]),
+            deadline_date: rowCopy?.["Deadline"],
+            deadline_type: parseDeadlineDate(rowCopy?.["Deadline"]),
+            description: rowCopy?.["Description"],
+            industries_served: rowCopy?.["Industries Served"],
+            name: rowCopy?.["name"],
+            organization_name: rowCopy?.["Organization Name"],
+            url: rowCopy?.["URL"],
+          };
           return cleanGrantDAO;
         })
         .filter((grant) => {
           const today = Date.now();
-          const monthDayYearDueDate = grant.deadline_date.split('/');
+          const monthDayYearDueDate = grant.deadline_date.split("/");
 
           if (monthDayYearDueDate.length !== 3) return true;
 
@@ -137,22 +145,18 @@ export async function ladiesLaunchJob(): Promise<Grant[]> {
 
     // Log duration and results
     const duration = ((Date.now() - startTime) / 1000).toFixed(3);
-    const streamDuration = createWriteStream('./timeResults.txt', {
-      flags: 'a',
+    const streamDuration = createWriteStream("./timeResults.txt", {
+      flags: "a",
     });
-    const streamResults = createWriteStream('./scrapeResults.json');
-    streamDuration.write(duration + '--- \n');
+    const streamResults = createWriteStream("./scrapeResults.json");
+    streamDuration.write(duration + "--- \n");
     streamResults.write(JSON.stringify(normalizedData, null, 2));
     streamDuration.end();
     streamResults.end();
   } catch (error: any) {
-    console.error('Error:', error.message);
+    console.error("Error:", error.message);
   } finally {
     if (browser) await browser.close();
     return normalizedData;
   }
 }
-
-// ladiesLaunchJob()
-//   .then((result) => console.debug(result))
-//   .catch((error) => console.error(error));

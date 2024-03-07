@@ -2,7 +2,7 @@
 
 import { cookies } from 'next/headers';
 import { runWithAmplifyServerContext } from '../utils/amplifyServerUtils';
-import { get } from 'aws-amplify/api/server';
+import { get, post } from 'aws-amplify/api/server';
 import { onError } from './errorLib';
 import { Grant } from '../../../../core/src/types/grants';
 
@@ -60,10 +60,13 @@ export async function scrapeLwlJob(): Promise<boolean> {
     nextServerContext: { cookies },
     operation: async (contextSpec) => {
       try {
-        const { body } = await get(contextSpec, {
+        const { body, statusCode } = await post(contextSpec, {
           apiName: 'grants',
-          path: '/grants/scrape',
+          path: '/scrape/lwl',
         }).response;
+        const content = await body.json();
+        console.debug('scrapeLwlJob content= \n', content);
+        console.debug('scrapeLwlJob statusCode= \n', statusCode);
 
         return (await body.json()) as { status: string };
       } catch (error) {
